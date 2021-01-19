@@ -503,4 +503,227 @@ RND_Calc_Init( void)
 	return E_OK;
 }
 
+
+/*******************************************************************************
+ * Function     :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+t_return
+RND_Fill_Dead_Pix (t_acq *data, matrix_full_t *matrix)
+{
+
+	bool toggle = FALSE;
+
+	for(int i = 0; i < TOTAL_LINES ; i++)
+	{
+		if(!toggle)
+		{
+			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			{
+				matrix->left[i][j*2] = data->left[(i* (TOTAL_COL/2) ) + j];
+				matrix->left[i][(j*2)+1] = 0;
+			}
+			toggle = TRUE;
+		}else
+		{
+			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			{
+				matrix->left[i][j*2] = 0;
+				matrix->left[i][(j*2)+1] = data->left[(i* (TOTAL_COL/2) ) + j];
+			}
+			toggle = FALSE;
+		}
+	}
+
+	for(int i = 0; i < TOTAL_LINES ; i++)
+	{
+		if(!toggle)
+		{
+			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			{
+				matrix->right[i][j*2] = 0;
+				matrix->right[i][(j*2)+1] = data->right[(i* (TOTAL_COL/2) ) + j];
+			}
+			toggle = TRUE;
+		}else
+		{
+			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			{
+				matrix->right[i][j*2] = data->right[(i* (TOTAL_COL/2) ) + j];
+				matrix->right[i][(j*2)+1] = 0;
+			}
+			toggle = FALSE;
+		}
+	}
+
+	return E_OK;
+}
+
+
+/*******************************************************************************
+ * Function     :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+t_return
+RND_Reorder (matrix_full_t *matrix)
+{
+	matrix_full_t *temp = (matrix_full_t*)malloc(sizeof(matrix_full_t));
+	memcpy(temp, matrix, sizeof(matrix_full_t));
+
+	for(uint8_t i = 0; i < TOTAL_LINES; i++)
+	{
+		for(uint8_t j = 0; j < TOTAL_COL; j++)
+		{
+			matrix->left[i][j] = temp->left[TOTAL_LINES - 1 - i][j];
+			matrix->right[i][j] = temp->right[TOTAL_LINES - 1 - i][j];
+		}
+	}
+
+	return E_OK;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+t_return
+RND_Fill_Neighboor (matrix_full_t *matrix)
+{
+	bool toggle = FALSE;
+	int mean_data;
+	matrix_full_t *temp = (matrix_full_t*)malloc(sizeof(matrix_full_t));
+	memcpy(temp, matrix, sizeof(matrix_full_t));
+
+	//LEFT SIDE
+	for(int i = 0; i < TOTAL_LINES ; i++)
+	{
+		if(!toggle)
+		{
+			for(int j = 0; j < TOTAL_COL; j = j+2)
+			{
+				//Si 1ere ligne et 1ere colonne
+				if( (i == 0) && (j == 0) )
+				{
+					mean_data = ( temp->left[i+1][j] + temp->left[i][j+1] ) / 2;
+					matrix->left[i][j] = mean_data;
+				}else if( (i == 0) && (j != 0) )
+				{
+					mean_data = ( temp->left[i][j-1] + temp->left[i+1][j] + temp->left[i][j+1] ) / 3;
+					matrix->left[i][j] = mean_data;
+
+				//Sinon Si 1ere colonne
+				}else if( (i != 0) && (j == 0) )
+				{
+					mean_data = ( temp->left[i+1][j] + temp->left[i-1][j] + temp->left[i][j+1] ) / 3;
+					matrix->left[i][j] = mean_data;
+				}else if( (i != 0) && (j != 0) )
+				{
+					mean_data = ( temp->left[i][j-1] + temp->left[i+1][j] + temp->left[i-1][j] + temp->left[i][j+1] ) / 4;
+					matrix->left[i][j] = mean_data;
+				}
+			}
+
+			toggle = TRUE;
+
+		}else
+		{
+			for(int j = 1; j < TOTAL_COL; j = j+2)
+			{
+				if( (i == 47) && (j == 15) )
+				{
+					mean_data = ( temp->left[i][j-1] + temp->left[i-1][j] ) / 2;
+					matrix->left[i][j] = mean_data;
+				}else if( (i == 47) && (j != 15) )
+				{
+					mean_data = ( temp->left[i][j-1] + temp->left[i-1][j] + temp->left[i][j+1] ) / 3;
+					matrix->left[i][j] = mean_data;
+
+				//Sinon Si dernière colonne
+				}else if( (i != 47) && (j == 15) )
+				{
+					mean_data = ( temp->left[i+1][j] + temp->left[i][j-1] + temp->left[i-1][j] ) / 3;
+					matrix->left[i][j] = mean_data;
+				}else if( (i != 47) && (j != 15) )
+				{
+					mean_data = ( temp->left[i][j-1] + temp->left[i+1][j] + temp->left[i-1][j] + temp->left[i][j+1] ) / 4;
+					matrix->left[i][j] = mean_data;
+				}
+			}
+
+			toggle = FALSE;
+		}
+	}
+
+	//RIGHT SIDE
+	for(int i = 0; i < TOTAL_LINES ; i++)
+	    {
+	        if(!toggle)
+	        {
+	            //qDebug() << "i"<< i;
+	            for(int j = 1; j < TOTAL_COL; j = j+2)
+	            {
+	                //qDebug() << "j"<< j;
+	                //Si 1ere ligne et 1ere colonne
+	                if( (i == 0) && (j == 15) )
+	                {
+	                    mean_data = ( temp->right[i+1][j] + temp->right[i][j-1] ) / 2;
+	                    matrix->right[i][j] = mean_data;
+	                }else if( (i == 0) && (j != 15) )
+	                {
+	                    mean_data = ( temp->right[i][j-1] + temp->right[i+1][j] + temp->right[i][j+1] ) / 3;
+	                    matrix->right[i][j] = mean_data;
+
+	                //Sinon Si 1ere colonne
+	                }else if( (i != 0) && (j == 15) )
+	                {
+	                    mean_data = ( temp->right[i+1][j] + temp->right[i-1][j] + temp->right[i][j-1] ) / 3;
+	                    matrix->right[i][j] = mean_data;
+	                }else if( (i != 0) && (j != 15) )
+	                {
+	                    mean_data = ( temp->right[i][j-1] + temp->right[i+1][j] + temp->right[i-1][j] + temp->right[i][j+1] ) / 4;
+	                    matrix->right[i][j] = mean_data;
+	                }
+	            }
+
+	            toggle = TRUE;
+
+	        }else
+	        {
+	            for(int j = 0; j < TOTAL_COL; j = j+2)
+	            {
+	                if( (i == 47) && (j == 0) )
+	                {
+	                    mean_data = ( temp->right[i][j+1] + temp->right[i-1][j]) / 2;
+	                    matrix->right[i][j] = mean_data;
+	                }else if( (i == 47) && (j != 0) )
+	                {
+	                    mean_data = ( temp->right[i][j-1] + temp->right[i-1][j] + temp->right[i][j+1] ) / 3;
+	                    matrix->right[i][j] = mean_data;
+
+	                //Sinon Si dernière colonne
+	                }else if( (i != 47) && (j == 0) )
+	                {
+	                    mean_data = ( temp->right[i+1][j] + temp->right[i][j+1] + temp->right[i-1][j] ) / 3;
+	                    matrix->right[i][j] = mean_data;
+	                }else if( (i != 47) && (j != 0) )
+	                {
+	                    mean_data = ( temp->right[i][j-1] + temp->right[i+1][j] + temp->right[i-1][j] + temp->right[i][j+1] ) / 4;
+	                    matrix->right[i][j] = mean_data;
+	                }
+	            }
+
+	            toggle = FALSE;
+	        }
+	    }
+
+	return E_OK;
+}
+
+
 /*** End Of File ***/

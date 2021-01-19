@@ -300,29 +300,29 @@ RND_LogInit( void)
  * Description  :
  *******************************************************************************/
 void
-RND_send_UART( t_acq data )
+RND_send_UART( matrix_full_t *data )
 {
 	uint16_t STARTMARKER = 0xFFFE;
 	uint16_t STOPMARKER = 0xFFFF;
 
 	RND_Log_Putword(STARTMARKER);
 
-	for( uint16_t i = 0; i < TOTAL_SENSORS_PER_SIDE; i++)
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
 	{
-		//for( uint16_t j = 0; j < TOTAL_COL / 2; j++)
-		//{
-		//	RND_Log_Putword([i][j]);
-		//}
-		RND_Log_Putword(data.left[i]);
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			RND_Log_Putword(data->left[i][j]);
+		}
+		//RND_Log_Putword(data->left[i]);
 	}
 
-	for( uint16_t i = 0; i < TOTAL_SENSORS_PER_SIDE; i++)
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
 	{
-		//for( uint16_t j = 0; j < TOTAL_COL / 2; j++)
-		//{
-		//	RND_Log_Putword(data.right[i][j]);
-		//}
-		RND_Log_Putword(data.right[i]);
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			RND_Log_Putword(data->right[i][j]);
+		}
+		//RND_Log_Putword(data->right[i]);
 	}
 
 	RND_Log_Putword(STOPMARKER);

@@ -46,5 +46,9 @@ t_return	RND_Acq_Multiple		(t_acq *p,  uint8_t n_acq);
 t_return	RND_Acq_Multiple_Start	(uint8_t n_acq);
 t_return	RND_Acq_Multiple_End	(t_acq *p, uint8_t acq_done, uint8_t total_acq);
 
+t_return    RND_Fill_Dead_Pix       (t_acq *data, matrix_full_t *matrix);
+t_return    RND_Reorder             (matrix_full_t *matrix);
+t_return    RND_Fill_Neighboor      (matrix_full_t *matrix);
+
 #endif
 /*** End Of File ***/

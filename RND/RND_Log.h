@@ -55,6 +55,7 @@ void		RND_Log_Putchar		(uint8_t c);
 uint8_t		RND_Log_Getchar		(void);
 t_return	RND_Log_Getchar_t	(uint32_t timeout, char *cval);
 void		RND_LogInIrq		(void);
+void        RND_send_UART       ( matrix_full_t *data );
 
 #endif
 /*** End Of File ***/

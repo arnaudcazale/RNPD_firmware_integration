@@ -85,6 +85,7 @@ typedef	enum
 typedef uint16_t (t_acq_tab)[TOTAL_SENSORS_PER_SIDE];
 typedef uint16_t (t_acq_mat)[TOTAL_LINES][TOTAL_COL/2];
 typedef uint8_t  (t_bin_mat)[TOTAL_LINES][TOTAL_COL/2];
+typedef uint16_t (matrix_t) [TOTAL_LINES][TOTAL_COL];
 
 typedef	struct
 {
@@ -97,6 +98,12 @@ typedef struct
 	t_acq_tab 	left;
 	t_acq_tab	right;
 }	t_acq;
+
+typedef struct
+{
+	matrix_t 	left;
+	matrix_t	right;
+}	matrix_full_t;
 
 typedef	struct
 {
@@ -128,7 +135,8 @@ typedef	struct
 
 typedef struct
 {
-	t_acq		data;
+	t_acq		     data;
+	matrix_full_t    matrix;
 
 	double 		left_angle;
 	double 		left_size;
