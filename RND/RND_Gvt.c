@@ -40,6 +40,9 @@ __OPTIMIZE_START
 extern uint8_t left_bin [TOTAL_LINES][TOTAL_COL/2];
 extern uint8_t right_bin[TOTAL_LINES][TOTAL_COL/2];
 
+extern uint8_t matrix_left_bin[TOTAL_LINES][TOTAL_COL];
+extern uint8_t matrix_right_bin[TOTAL_LINES][TOTAL_COL];
+
 
 #if (SIMULATION==1)
 extern uint16_t right_sensor_tab[];
@@ -810,7 +813,7 @@ t_point right_A, right_B;
 	RND_Fill_Dead_Pix(&p->data, &p->matrix);
 	RND_Reorder(&p->matrix);
 	RND_Fill_Neighboor(&p->matrix);
-	RND_send_UART( &p->matrix );
+	//RND_send_UART_full_matrix( &p->matrix );
 	/**********************************************/
 
 	/* make binary images */
@@ -818,8 +821,11 @@ t_point right_A, right_B;
 	_binarize( left_sensor_tab,  left_bin);
 	_binarize( right_sensor_tab, right_bin);
 #else
-	_binarize( p->data.left,  left_bin);
-	_binarize( p->data.right, right_bin);
+	//_binarize( p->data.left,  left_bin);
+	//_binarize( p->data.right, right_bin);
+	_binarize_matrix(p->matrix.left, matrix_left_bin);
+	_binarize_matrix(p->matrix.right, matrix_right_bin);
+	//RND_send_UART_side_bin( &matrix_left_bin );
 #endif
 
 	/* filter matrixes */

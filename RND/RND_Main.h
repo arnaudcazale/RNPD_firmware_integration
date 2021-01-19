@@ -86,6 +86,8 @@ typedef uint16_t (t_acq_tab)[TOTAL_SENSORS_PER_SIDE];
 typedef uint16_t (t_acq_mat)[TOTAL_LINES][TOTAL_COL/2];
 typedef uint8_t  (t_bin_mat)[TOTAL_LINES][TOTAL_COL/2];
 typedef uint16_t (matrix_t) [TOTAL_LINES][TOTAL_COL];
+typedef uint8_t  (matrix_bin_t)[TOTAL_LINES][TOTAL_COL];
+
 
 typedef	struct
 {

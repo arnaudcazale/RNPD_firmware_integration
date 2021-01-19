@@ -33,6 +33,9 @@ static t_return	_calc_size	(t_sz_data *p);
 uint8_t left_bin [TOTAL_LINES][TOTAL_COL/2];
 uint8_t right_bin[TOTAL_LINES][TOTAL_COL/2];
 
+uint8_t matrix_left_bin[TOTAL_LINES][TOTAL_COL];
+uint8_t matrix_right_bin[TOTAL_LINES][TOTAL_COL];
+
 /*******************************************************************************
  * Externals
  *******************************************************************************/
@@ -71,6 +74,30 @@ double mean = 0.0;
  * Return code  :
  * Description  :
  *******************************************************************************/
+uint32_t
+_calc_means_matrix( matrix_t in)
+{
+double mean = 0.0;
+
+	for( register int i = 0; i < TOTAL_LINES; i++)
+	{
+		for( register int j = 0; j < TOTAL_COL; j++)
+		{
+			mean += (double)( in[i][j]);
+		}
+	}
+	mean /= (double)TOTAL_LINES*TOTAL_COL;
+
+	return (uint32_t)mean;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
 t_return
 _binarize( t_acq_tab inTab, t_bin_mat outMat)
 {
@@ -85,6 +112,36 @@ t_acq_mat *p = (t_acq_mat *)inTab;
 		for( uint16_t j = 0; j < TOTAL_COL / 2; j++)
 		{
 			if( (uint32_t)(*p)[i][j] >= means)
+				outMat[i][j] = 1;
+			else
+				outMat[i][j] = 0;
+		}
+	}
+
+	return E_OK;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+t_return
+_binarize_matrix( matrix_t inTab, matrix_bin_t outMat)
+{
+	//matrix_t *p = (matrix_t *)inTab;
+
+	/* calculate means of both matrixes */
+	uint32_t means = _calc_means_matrix( inTab);
+
+	/* make binary matrixes */
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
+	{
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			if( (uint32_t)inTab[i][j] >= means)
 				outMat[i][j] = 1;
 			else
 				outMat[i][j] = 0;

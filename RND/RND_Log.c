@@ -300,7 +300,7 @@ RND_LogInit( void)
  * Description  :
  *******************************************************************************/
 void
-RND_send_UART( matrix_full_t *data )
+RND_send_UART_full_matrix( matrix_full_t *data )
 {
 	uint16_t STARTMARKER = 0xFFFE;
 	uint16_t STOPMARKER = 0xFFFF;
@@ -323,6 +323,36 @@ RND_send_UART( matrix_full_t *data )
 			RND_Log_Putword(data->right[i][j]);
 		}
 		//RND_Log_Putword(data->right[i]);
+	}
+
+	RND_Log_Putword(STOPMARKER);
+
+	RND_Log_Putchar('\n');
+
+}
+
+/*******************************************************************************
+ * Function     : RND_SEQ_Sequencer
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+void
+RND_send_UART_side_bin( matrix_bin_t *data )
+{
+	uint16_t STARTMARKER = 0xFFFE;
+	uint16_t STOPMARKER = 0xFFFF;
+
+	RND_Log_Putword(STARTMARKER);
+
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
+	{
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			RND_Log_Putword(*data[i][j]);
+		}
+		//RND_Log_Putword(data->left[i]);
 	}
 
 	RND_Log_Putword(STOPMARKER);

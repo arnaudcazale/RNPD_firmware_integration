@@ -49,5 +49,8 @@ void			_get_coord_extr_right	(t_bin_mat in, uint8_t *xc, uint8_t *yc, uint8_t *x
 void			_get_hilo_pos			(t_bin_mat in, uint8_t *hi, uint8_t *low);
 void			_get_hilo_tab_pos		(t_acq_tab tab, uint8_t *hi, uint8_t *low);
 
+uint32_t		_calc_means_matrix		(matrix_t in);
+t_return		_binarize_matrix	    (matrix_t inTab, matrix_bin_t outMat);
+
 #endif
 /*** End Of File ***/
