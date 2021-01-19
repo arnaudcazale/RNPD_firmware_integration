@@ -665,10 +665,8 @@ RND_Fill_Neighboor (matrix_full_t *matrix)
 	    {
 	        if(!toggle)
 	        {
-	            //qDebug() << "i"<< i;
 	            for(int j = 1; j < TOTAL_COL; j = j+2)
 	            {
-	                //qDebug() << "j"<< j;
 	                //Si 1ere ligne et 1ere colonne
 	                if( (i == 0) && (j == 15) )
 	                {

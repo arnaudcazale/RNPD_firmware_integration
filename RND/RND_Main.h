@@ -108,6 +108,7 @@ typedef struct
 typedef	struct
 {
 	t_acq		data;
+	matrix_full_t    matrix;
 
 	t_point		left_hi;
 	t_point		left_lo;

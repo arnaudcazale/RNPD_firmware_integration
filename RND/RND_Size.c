@@ -521,13 +521,15 @@ char filename[24];
 	RND_Print("PENCHEZ-VOUS\nEN AVANT"); 	osDelay(4*SECOND);
 	RND_Acq_Multiple_End( &p->d1.data, 5, 10);
 
-	RND_Fill_Dead_Pix(&p->d1.data, &p->d1.matrix);
-	RND_Reorder(&p->d1.matrix);
-	RND_Fill_Neighboor(&p->d1.matrix);
+	/***************************************************/
+	//RND_Fill_Dead_Pix(&p->d1.data, &p->d1.matrix);
+	//RND_Reorder(&p->d1.matrix);
+	//RND_Fill_Neighboor(&p->d1.matrix);
+	//RND_send_UART( &p->d1.matrix );
+	/***************************************************/
 
 	/* calculate size on average matrix */
 	_calc_size( &p->d1);
-	RND_send_UART( &p->d1.matrix );
 
 	sprintf( filename, "Sz1_data_%d.csv\n", cnt);
 	RND_USB_Write_Size( &p->d1, filename);

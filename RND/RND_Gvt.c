@@ -806,6 +806,13 @@ t_point right_A, right_B;
 //	LOG("GVT: Acquiring 4 frames\n");
 	RND_Acq_Multiple( &p->data, 5);
 
+	/**********************************************/
+	RND_Fill_Dead_Pix(&p->data, &p->matrix);
+	RND_Reorder(&p->matrix);
+	RND_Fill_Neighboor(&p->matrix);
+	RND_send_UART( &p->matrix );
+	/**********************************************/
+
 	/* make binary images */
 #if (SIMULATION==1)
 	_binarize( left_sensor_tab,  left_bin);
