@@ -1416,6 +1416,8 @@ t_point right_A, right_B;
 
 	dev = (devg + devd) / 2;
 
+	LOG("dev_total = %d\n", dev);
+
 	/*if( dev == 0)
 		p->pronation = NEUTRE_t;
 	else if( dev > 0)

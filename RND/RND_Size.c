@@ -160,6 +160,37 @@ _binarize_matrix( matrix_t inTab, matrix_bin_t outMat)
  * Return code  :
  * Description  :
  *******************************************************************************/
+t_return
+_binarize_matrix_from_noise_margin( matrix_t inTab, matrix_bin_t outMat)
+{
+
+	/* calculate means of both matrixes */
+	uint32_t noise_margin = 100;
+	LOG("noise_margin: = %d\n", noise_margin);
+
+
+	/* make binary matrixes */
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
+	{
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			if( (uint32_t)inTab[i][j] > noise_margin)
+				outMat[i][j] = 1;
+			else
+				outMat[i][j] = 0;
+		}
+	}
+
+	return E_OK;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
 uint8_t
 _get_median_line( t_bin_mat in)
 {
@@ -269,6 +300,76 @@ uint8_t median = _get_median_line( in);
 			*yb = i;
 		}
 	}
+
+	return;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+void
+_get_coord_extr_axial_left( matrix_bin_t in, uint8_t *xa, uint8_t *ya, uint8_t *xb, uint8_t *yb)
+{
+register int i,j;
+uint8_t sum_tab[TOTAL_LINES] = {0};
+
+	for( i = 0; i < TOTAL_LINES; i++)
+	{
+		sum_tab[i] = 0;
+		for( j = TOTAL_COL - 1; j >= 0  ; j--)
+		{
+			sum_tab[i] = (TOTAL_COL - 1 ) - j;
+			if( in[i][j])
+				break;
+		}
+	}
+
+	/* bottom half -> xa, ya */
+	*xa = TOTAL_COL - 1;
+	*ya = 0;
+
+	for( i = 0; i < TOTAL_LINES; i++)
+	{
+		if( sum_tab[i] < *xa)
+		{
+			*xa = sum_tab[i];
+			*ya = i;
+			break;         //Find first bottom pixel found is OK
+		}
+	}
+    //Check upper line
+	*xa = sum_tab[*ya+1];
+	*ya = *ya+1;
+
+	*xa = (TOTAL_COL - 1) - *xa
+
+    LOG("SIZE: Left heel point : %d, %d\n", *xa, *ya);
+
+	/* top half -> xb, yb */
+	*xb = TOTAL_COL - 1;
+	*yb = TOTAL_LINES - 1;
+
+	for( i = TOTAL_LINES - 1; i >= 0; i--)
+	{
+		if( (sum_tab[i] < *xb) || (sum_tab[i] == 0))
+		{
+			*xb = sum_tab[i];
+			*yb = i;
+			break;
+		}
+	}
+	//Check lower line
+	*xb = sum_tab[*yb-1];
+	*yb = *yb-1;
+	*xb = (TOTAL_COL - 1) - *xb;
+
+	LOG("SIZE: Left toe point : %d, %d\n", *xb, *yb);
+
+	osDelay(100);
 
 	return;
 }
@@ -448,89 +549,106 @@ t_acq_mat *in = (t_acq_mat *)tab;
  * Return code  :
  * Description  :
  *******************************************************************************/
+#define 	NOISEMARGIN		100
+
+void
+_get_hilo_pos_matrix( matrix_t tab, uint8_t *hi, uint8_t *low)
+{
+register int i,j;
+bool found = FALSE;
+matrix_t *in = (matrix_t *)tab;
+
+	/* find low position */
+	for( i = 0; i < TOTAL_LINES; i ++)
+	{
+		if (found == FALSE)
+		{
+			for (j = 0; j < TOTAL_COL; j++)
+			{
+				if ((*in)[i][j] > NOISEMARGIN)
+				{
+					found = TRUE;
+					*low = i;
+					break;
+				}
+			}
+		}
+		else
+			break;
+	}
+
+	/* find hi position */
+	found = FALSE;
+	for( i = TOTAL_LINES - 1; i >= 0; i --)
+	{
+		if( found == FALSE)
+		{
+			for( j = 0; j < TOTAL_COL; j++)
+			{
+				if( (*in)[i][j] > NOISEMARGIN)
+				{
+					found = TRUE;
+					*hi = i;
+					break;
+				}
+			}
+		}
+		else
+			break;
+	}
+
+	LOG("SIZE: Left heel line : %d\n", *low);
+	LOG("SIZE: Left toe line : %d\n", *hi);
+
+	osDelay(100);
+
+	return;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
 static t_return
 _calc_size( t_sz_data *p)
 {
 uint8_t xa, ya, xb, yb;
-uint8_t xc, yc, xd, yd;
-double  a1 = 0, a2 = 0;
-double xy_ratio = 16/6.6;
+double  a1 = 0;
+double offset = 5;
 
 	/* Left sensor data */
 
 #if (SIMULATION==1)
 	_binarize( left_sensor_tab,  left_bin);
 #else
-	_binarize( p->data.left,  left_bin);
+	//_binarize( p->data.left,  left_bin);
+	_binarize_matrix_from_noise_margin(p->matrix.left, matrix_left_bin);
 #endif
 
-	_get_coord_extr_left(  left_bin, &xa, &ya, &xb, &yb);
-	_get_coord_extr_right( left_bin, &xc, &yc, &xd, &yd);
-
-	xa *= xy_ratio;
-	xb *= xy_ratio;
-	xc *= xy_ratio;
-	xd *= xy_ratio;
+	_get_coord_extr_axial_left(  matrix_left_bin, &xa, &ya, &xb, &yb);
+	_get_hilo_pos_matrix(p->matrix.left, &p->left_hi, &p->left_lo);
 
 	if( (yb - ya) != 0)
-		a1 = atan(((double) xb - (double) xa) / ((double) yb - (double) ya));
+	        a1 = atan(((double) xb - (double) xa) / ((double) yb - (double) ya));
 	else
 		a1 = 0;
 
-	/* angle in degres :
-	 * a1 = a1 * (180/M_PI);
-	 */
+	if ( abs(a1*(180/M_PI)) > 25) a1 = 0; //detection problem
 
-	if( (yd - yc) != 0)
-		a2 = atan(((double) xd - (double) xc) / ((double) yd - (double) yc));
-	else
-		a2 = 0;
+	p->left_angle =  (M_PI/2) - a1;
+	p->left_size = ( (p->left_hi - p->left_lo) / sin( p->left_angle) ) + offset;
 
-	/* angle in degres :
-	 * a2 = a2 * (180/M_PI);
-	 */
+	LOG("SIZE: left_angle : %f\n", p->left_angle*(180/M_PI));
+	LOG("SIZE: left_size : %f\n", p->left_size);
 
-	p->left_angle = (a1 + a2) / 2.0;
+	osDelay(100);
+
 
 	/* right sensor data */
 
-#if (SIMULATION==1)
-	_binarize( right_sensor_tab, right_bin);
-#else
-	_binarize( p->data.right, right_bin);
-#endif
-
-	_get_coord_extr_left(  right_bin, &xa, &ya, &xb, &yb);
-	_get_coord_extr_right( right_bin, &xc, &yc, &xd, &yd);
-
-	xa *= xy_ratio;
-	xb *= xy_ratio;
-	xc *= xy_ratio;
-	xd *= xy_ratio;
-
-	if( (yb - ya) != 0)
-		a1 = atan(((double) xb - (double) xa) / ((double) yb - (double) ya));
-	else
-		a1 = 0;
-
-	/* angle in degres :
-	 * a1 = a1 * (180/M_PI);
-	 */
-
-	if( (yd - yc) != 0)
-		a2 = atan(((double) xd - (double) xc) / ((double) yd - (double) yc));
-	else
-		a2 = 0;
-
-	/* angle in degres :
-	 * a2 = a2 * (180/M_PI);
-	 */
-
-	/* take median value of angle */
-	p->right_angle = (a1 + a2) / 2.0;
-
-	/* left size */
-	//_get_hilo_pos( left_bin, &hi, &lo);
 
 #if (SIMULATION==1)
 	_get_hilo_tab_pos( left_sensor_tab, &hi, &lo);
@@ -581,10 +699,10 @@ char filename[24];
 	RND_Acq_Multiple_End( &p->d1.data, 5, 10);
 
 	/***************************************************/
-	//RND_Fill_Dead_Pix(&p->d1.data, &p->d1.matrix);
-	//RND_Reorder(&p->d1.matrix);
-	//RND_Fill_Neighboor(&p->d1.matrix);
-	//RND_send_UART( &p->d1.matrix );
+	RND_Fill_Dead_Pix(&p->d1.data, &p->d1.matrix);
+	RND_Reorder(&p->d1.matrix);
+	RND_Fill_Neighboor(&p->d1.matrix);
+	RND_send_UART_full_matrix( &p->d1.matrix );
 	/***************************************************/
 
 	/* calculate size on average matrix */
@@ -604,7 +722,7 @@ char filename[24];
 		osDelay(100);
 
 	RND_Acq_Multiple_Start(5);
-	RND_Print("PENCHEZ-VOUS\nEN AVANTS"); osDelay(4*SECOND);
+	RND_Print("PENCHEZ-VOUS\nEN AVANT"); osDelay(4*SECOND);
 	RND_Acq_Multiple_End( &p->d2.data, 5, 10);
 
 	_calc_size( &p->d2);

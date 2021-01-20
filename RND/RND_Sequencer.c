@@ -152,7 +152,7 @@ RND_SEQ_Step_T3( void)
 
 	/* Pronation et Gravity drop */
 	static t_gvt_data gvt_data = {0};
-	RND_Gvt_Get( &gvt_data);
+	//RND_Gvt_Get( &gvt_data);
 
 	sprintf( filename, "GVT_Data_%d.csv\n", cnt);
 	RND_USB_Write_Gvt( &gvt_data, filename);

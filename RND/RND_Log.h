@@ -33,7 +33,7 @@
 #define DBG_UART				USART3
 
 #ifdef	LOGGING
-#define LOG(...)	do { RND_msg_log(__FUNCTION__ , __LINE__ , __VA_ARGS__); } while (0)
+#define LOG(...);	do { RND_msg_log(__FUNCTION__ , __LINE__ , __VA_ARGS__); } while (0)
 #else
 #define LOG(...)
 #endif
