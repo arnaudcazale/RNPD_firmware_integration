@@ -504,6 +504,184 @@ t_col_zone	zy[10];
 }
 
 t_return
+RND_Gvt_Get_Zones( matrix_t *p, t_point *A, t_point *B)
+{
+t_return ret = E_ERROR;
+
+uint32_t	line_sum[TOTAL_LINES];
+uint32_t	col_sum[TOTAL_COL];
+uint32_t	moy;
+uint8_t		index;
+uint16_t	val;
+
+t_line_zone	zx[10];
+t_col_zone	zy[10];
+
+	/* somme des lignes */
+	memset( (void *)line_sum, 0, sizeof(line_sum));
+	for( uint8_t i = 0; i < TOTAL_LINES; i++)
+		for( uint8_t j = 0; j < TOTAL_COL; j++)
+			line_sum[i] += (*p)[i][j];
+
+	/* moyenne des sommes des lignes */
+	moy = 0;
+	for( uint8_t i = 0; i < TOTAL_LINES; i++)
+		moy += line_sum[i];
+	moy /= TOTAL_LINES;
+
+	/* recherche zones */
+
+	memset( (void *)zx, 0, sizeof(zx));
+	val = index = 0;
+	for( uint8_t i = 0; i < TOTAL_LINES; i++)
+	{
+		if( (line_sum[i] > moy) && (val < moy))
+		{
+			zx[index].index = index;
+			zx[index].start_line = i;
+		}
+		else
+		if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
+		{
+			zx[index].end_line = i;
+			zx[index].n_lines = zx[index].end_line - zx[index].start_line;
+//			LOG("line_zone[%d] -> from line %d to line %d\n",
+//					index, zx[index].start_line, zx[index].end_line);
+			index ++;
+		}
+		val = line_sum[i];
+	}
+
+	if( index > 2)
+	{
+		/* sort and take the two biggest zones */
+		qsort( (void *)zx, index, sizeof(t_line_zone), compare_n_lines);
+		qsort( (void *)zx, 2, sizeof(t_line_zone), compare_index);
+		index = 2;
+	}
+	else if( index <= 1)
+	{
+		LOG("Pb positionnement (line)\n");
+		return E_ERROR;
+	}
+
+//	LOG("Zone haute lignes [%d à %d]\n", zx[0].start_line, zx[0].end_line);
+//	LOG("Zone basse lignes [%d à %d]\n", zx[1].start_line, zx[1].end_line);
+
+	/* zone 1 */
+	/* somme des colonnes */
+	memset( (void *)col_sum, 0, sizeof(col_sum));
+	for( uint8_t j = 0; j < TOTAL_COL; j++)
+		for( uint8_t i = zx[0].start_line; i < zx[0].end_line; i ++)
+			col_sum[j] += (*p)[i][j];
+
+	/* calcul moyenne */
+	moy = 0;
+	for( uint8_t i = 0; i < TOTAL_COL; i++)
+		moy += col_sum[i];
+	moy /= (TOTAL_COL);
+
+	/* recherche zone */
+	memset( (void *)zy, 0, sizeof(zy));
+	val = index = 0;
+	for( uint8_t i = 0; i < TOTAL_COL; i++)
+	{
+		if( (col_sum[i] > moy) && (val < moy))
+		{
+			zy[index].index = index;
+			zy[index].start_col = i;
+		}
+		else
+		if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		{
+			zy[index].end_col = i;
+			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
+//			LOG("col_zone[%d] -> from col %d to col %d\n",
+//					index, zy[index].start_col, zy[index].end_col);
+			index ++;
+		}
+		val = col_sum[i];
+	}
+
+	if( index > 1)
+	{
+		/* sort and take biggest one */
+		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
+		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		index = 1;
+	}
+	else if( !index)
+	{
+		LOG("Pb positionement (col zone 1)\n");
+		return E_ERROR;
+	}
+
+//	LOG("Zone haute cols [%d à %d]\n", zy[0].start_col, zy[0].end_col);
+
+	A->line = (zx[0].start_line + zx[0].end_line) / 2;
+	A->col  = (zy[0].start_col + zy[0].end_col) / 2;
+
+	/* zone 2 */
+	/* somme des colonnes */
+	memset( (void *)col_sum, 0, sizeof(col_sum));
+	for( uint8_t j = 0; j < TOTAL_COL; j++)
+		for( uint8_t i = zx[1].start_line; i < zx[1].end_line; i ++)
+			col_sum[j] += (*p)[i][j];
+
+	/* calcul moyenne */
+	moy = 0;
+	for( uint8_t i = 0; i < TOTAL_COL; i++)
+		moy += col_sum[i];
+	moy /= (TOTAL_COL);
+
+	/* recherche zones */
+	memset( (void *)zy, 0, sizeof(zy));
+	val = index = 0;
+	for( uint8_t i = 0; i < TOTAL_COL; i++)
+	{
+		if( (col_sum[i] > moy) && (val < moy))
+		{
+			zy[index].index = index;
+			zy[index].start_col = i;
+		}
+		else
+		if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		{
+			zy[index].end_col = i;
+			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
+//			LOG("col_zone[%d] -> from col %d to col %d\n",
+//					index, zy[index].start_col, zy[index].end_col);
+			index ++;
+		}
+		val = col_sum[i];
+	}
+
+	if( index > 1)
+	{
+		/* sort and take biggest one */
+		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
+		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		index = 1;
+	}
+	else if (!index)
+	{
+		LOG("Pb positionement (col zone 2)\n");
+		return E_ERROR;
+	}
+
+//	LOG("Zone basse cols [%d à %d]\n", zy[0].start_col, zy[0].end_col);
+
+	B->line = (zx[1].start_line + zx[1].end_line) / 2;
+	B->col  = (zy[0].start_col + zy[0].end_col) / 2;
+
+	LOG("->A (%d,%d)\n", A->line, A->col);
+	LOG("->B  (%d,%d)\n", B->line, B->col);
+	osDelay(100);
+
+	return ret;
+}
+
+t_return
 _cal_pron3( t_acq_tab *p, uint32_t *lpres, uint32_t *rpres)
 {
 uint32_t	line_sum[TOTAL_LINES];
@@ -862,8 +1040,10 @@ t_point right_A, right_B;
 
 #endif
 
-	RND_Gvt_Get2( &(p->data.left) , &left_A,  &left_B);
-	RND_Gvt_Get2( &(p->data.right), &right_A, &right_B);
+	//RND_Gvt_Get2( &(p->data.left) , &left_A,  &left_B);
+	//RND_Gvt_Get2( &(p->data.right), &right_A, &right_B);
+	RND_Gvt_Get_Zones( &matrix_left_filtered , &left_A,  &left_B);
+	RND_Gvt_Get_Zones( &matrix_right_filtered , &right_A,  &right_B);
 
 //	RND_Gvt_Get3_left( left_filtered, &left_A, &left_B);
 //	RND_Gvt_Get3_right( right_filtered, &right_A, &right_B);
