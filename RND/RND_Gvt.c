@@ -26,6 +26,9 @@
 static t_acq_mat	left_filtered;
 static t_acq_mat	right_filtered;
 
+static matrix_t	matrix_left_filtered;
+static matrix_t	matrix_right_filtered;
+
 #if (OPTIMIZE==1)
 __OPTIMIZE_START
 #endif
@@ -108,6 +111,26 @@ register int i,j;
 
 	for( i = 0; i < TOTAL_LINES; i++)
 		for( j = 0; j < TOTAL_COL/2; j++)
+			outMat[i][j] = bin[i][j] ? (*p)[i][j] : 0;
+
+	return;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+void
+_filter_matrix( matrix_t inTab, matrix_bin_t bin, matrix_t outMat)
+{
+	matrix_t *p = (matrix_t *)inTab;
+	register int i,j;
+
+	for( i = 0; i < TOTAL_LINES; i++)
+		for( j = 0; j < TOTAL_COL; j++)
 			outMat[i][j] = bin[i][j] ? (*p)[i][j] : 0;
 
 	return;
@@ -813,7 +836,7 @@ t_point right_A, right_B;
 	RND_Fill_Dead_Pix(&p->data, &p->matrix);
 	RND_Reorder(&p->matrix);
 	RND_Fill_Neighboor(&p->matrix);
-	//RND_send_UART_full_matrix( &p->matrix );
+	RND_send_UART_full_matrix( &p->matrix );
 	/**********************************************/
 
 	/* make binary images */
@@ -825,7 +848,6 @@ t_point right_A, right_B;
 	//_binarize( p->data.right, right_bin);
 	_binarize_matrix(p->matrix.left, matrix_left_bin);
 	_binarize_matrix(p->matrix.right, matrix_right_bin);
-	//RND_send_UART_side_bin( &matrix_left_bin );
 #endif
 
 	/* filter matrixes */
@@ -833,8 +855,11 @@ t_point right_A, right_B;
 	_filter_mat( left_sensor_tab, left_bin, left_filtered);
 	_filter_mat( right_sensor_tab, right_bin, right_filtered);
 #else
-	_filter_mat( p->data.left, left_bin, left_filtered);
-	_filter_mat( p->data.right, right_bin, right_filtered);
+	//_filter_mat( p->data.left, left_bin, left_filtered);
+	//_filter_mat( p->data.right, right_bin, right_filtered);
+	_filter_matrix( p->matrix.left, matrix_left_bin, matrix_left_filtered);
+	_filter_matrix( p->matrix.right, matrix_right_bin, matrix_right_filtered);
+
 #endif
 
 	RND_Gvt_Get2( &(p->data.left) , &left_A,  &left_B);

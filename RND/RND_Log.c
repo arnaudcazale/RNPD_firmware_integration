@@ -339,7 +339,7 @@ RND_send_UART_full_matrix( matrix_full_t *data )
  * Description  :
  *******************************************************************************/
 void
-RND_send_UART_side_bin( matrix_bin_t *data )
+RND_send_UART_side_matrix( matrix_t *data )
 {
 	uint16_t STARTMARKER = 0xFFFE;
 	uint16_t STOPMARKER = 0xFFFF;
@@ -350,7 +350,7 @@ RND_send_UART_side_bin( matrix_bin_t *data )
 	{
 		for( uint16_t j = 0; j < TOTAL_COL; j++)
 		{
-			RND_Log_Putword(*data[i][j]);
+			RND_Log_Putword(data[i][j]);
 		}
 		//RND_Log_Putword(data->left[i]);
 	}
