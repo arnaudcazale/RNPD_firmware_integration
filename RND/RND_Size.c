@@ -75,7 +75,7 @@ double mean = 0.0;
  * Description  :
  *******************************************************************************/
 uint32_t
-_calc_means_matrix( matrix_t in)
+_calc_mean_matrix( matrix_t in)
 {
 double mean = 0.0;
 
@@ -134,14 +134,16 @@ _binarize_matrix( matrix_t inTab, matrix_bin_t outMat)
 	//matrix_t *p = (matrix_t *)inTab;
 
 	/* calculate means of both matrixes */
-	uint32_t means = _calc_means_matrix( inTab);
+	uint32_t means = _calc_mean_matrix( inTab);
+	LOG("matrix_mean: = %d\n", means);
+
 
 	/* make binary matrixes */
 	for( uint16_t i = 0; i < TOTAL_LINES; i++)
 	{
 		for( uint16_t j = 0; j < TOTAL_COL; j++)
 		{
-			if( (uint32_t)inTab[i][j] >= means)
+			if( (uint32_t)inTab[i][j] > means)
 				outMat[i][j] = 1;
 			else
 				outMat[i][j] = 0;
