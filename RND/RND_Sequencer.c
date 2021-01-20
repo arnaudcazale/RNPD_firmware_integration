@@ -178,6 +178,7 @@ RND_SEQ_Step_T3( void)
 	}
 	cnt ++;
 
+
 #endif
 
 	return SEQ_T4;

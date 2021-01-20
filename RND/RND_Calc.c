@@ -513,14 +513,13 @@ RND_Calc_Init( void)
 t_return
 RND_Fill_Dead_Pix (t_acq *data, matrix_full_t *matrix)
 {
-
 	bool toggle = FALSE;
 
 	for(int i = 0; i < TOTAL_LINES ; i++)
 	{
 		if(!toggle)
 		{
-			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			for(int j = 0; j < (TOTAL_COL/2); j++)
 			{
 				matrix->left[i][j*2] = data->left[(i* (TOTAL_COL/2) ) + j];
 				matrix->left[i][(j*2)+1] = 0;
@@ -528,7 +527,7 @@ RND_Fill_Dead_Pix (t_acq *data, matrix_full_t *matrix)
 			toggle = TRUE;
 		}else
 		{
-			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			for(int j = 0; j < (TOTAL_COL/2); j++)
 			{
 				matrix->left[i][j*2] = 0;
 				matrix->left[i][(j*2)+1] = data->left[(i* (TOTAL_COL/2) ) + j];
@@ -541,7 +540,7 @@ RND_Fill_Dead_Pix (t_acq *data, matrix_full_t *matrix)
 	{
 		if(!toggle)
 		{
-			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			for(int j = 0; j < (TOTAL_COL/2); j++)
 			{
 				matrix->right[i][j*2] = 0;
 				matrix->right[i][(j*2)+1] = data->right[(i* (TOTAL_COL/2) ) + j];
@@ -549,7 +548,7 @@ RND_Fill_Dead_Pix (t_acq *data, matrix_full_t *matrix)
 			toggle = TRUE;
 		}else
 		{
-			for(int j = 0; j < (TOTAL_COL/2)-1; j++)
+			for(int j = 0; j < (TOTAL_COL/2); j++)
 			{
 				matrix->right[i][j*2] = data->right[(i* (TOTAL_COL/2) ) + j];
 				matrix->right[i][(j*2)+1] = 0;

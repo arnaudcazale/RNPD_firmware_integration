@@ -1289,7 +1289,6 @@ t_point right_A, right_B;
 	LOG("GVT calculation\n");
 
 	/* Acquire data */
-//	LOG("GVT: Acquiring 4 frames\n");
 	RND_Acq_Multiple( &p->data, 5);
 
 	/**********************************************/
@@ -1304,8 +1303,6 @@ t_point right_A, right_B;
 	_binarize( left_sensor_tab,  left_bin);
 	_binarize( right_sensor_tab, right_bin);
 #else
-	//_binarize( p->data.left,  left_bin);
-	//_binarize( p->data.right, right_bin);
 	_binarize_matrix(p->matrix.left, matrix_left_bin);
 	_binarize_matrix(p->matrix.right, matrix_right_bin);
 #endif
@@ -1315,29 +1312,17 @@ t_point right_A, right_B;
 	_filter_mat( left_sensor_tab, left_bin, left_filtered);
 	_filter_mat( right_sensor_tab, right_bin, right_filtered);
 #else
-	//_filter_mat( p->data.left, left_bin, left_filtered);
-	//_filter_mat( p->data.right, right_bin, right_filtered);
 	_filter_matrix( p->matrix.left, matrix_left_bin, matrix_left_filtered);
 	_filter_matrix( p->matrix.right, matrix_right_bin, matrix_right_filtered);
 
 #endif
-
-	//RND_Gvt_Get2( &(p->data.left) , &left_A,  &left_B);
-	//RND_Gvt_Get2( &(p->data.right), &right_A, &right_B);
 	RND_Gvt_Get_Zones( &matrix_left_filtered , &left_A,  &left_B);
 	RND_Gvt_Get_Zones( &matrix_right_filtered , &right_A,  &right_B);
-
-//	RND_Gvt_Get3_left( left_filtered, &left_A, &left_B);
-//	RND_Gvt_Get3_right( right_filtered, &right_A, &right_B);
 
 	p->left_lo = left_A;
 	p->left_hi = left_B;
 	p->right_lo = right_A;
 	p->right_hi = right_B;
-
-	/* get median lines for each */
-//	p->left_median  = _get_median_line( left_bin);
-//	p->right_median = _get_median_line( right_bin);
 
 	p->left_median  = (left_A.line + left_B.line) / 2;
 	p->right_median = (right_A.line + right_B.line) / 2;
@@ -1345,10 +1330,6 @@ t_point right_A, right_B;
 	LOG("GVT: Left median line : %d\n", p->left_median);
 	LOG("GVT: Right median line: %d\n", p->right_median);
 
-	//p->left_upper_sum  = _sum_mat( left_filtered, 0, p->left_median);
-	//p->left_lower_sum  = _sum_mat( left_filtered, p->left_median, TOTAL_LINES);
-	//p->right_upper_sum = _sum_mat( right_filtered, 0, p->right_median);
-	//p->right_lower_sum = _sum_mat( right_filtered, p->right_median, TOTAL_LINES);
 	p->left_lower_sum  = _sum_matrix( matrix_left_filtered, 0, p->left_median);
 	p->left_upper_sum  = _sum_matrix( matrix_left_filtered, p->left_median, TOTAL_LINES);
 	p->right_lower_sum = _sum_matrix( matrix_right_filtered, 0, p->right_median);
@@ -1378,52 +1359,14 @@ t_point right_A, right_B;
 
 	osDelay(100);
 
-	/* cal pronation */
-//	p->left_extern_p = p->left_intern_p = p->right_extern_p = p->right_intern_p = 0;
-//
-//	_cal_pron( left_filtered, 0, TOTAL_LINES, &p->left_extern_p, &p->left_intern_p);
-//	LOG("left_sensor (method 1): extern_p = %d, intern_p = %d\n", p->left_extern_p, p->left_intern_p);
-//
-//	_cal_pron( right_filtered, 0, TOTAL_LINES, &p->right_intern_p, &p->right_extern_p);
-//	LOG("right_sensor (method 1): extern_p = %d, intern_p = %d\n", p->right_extern_p, p->right_intern_p);
-//
-//	_cal_pron2( left_filtered, &left_A, &left_B, &p->left_extern_p, &p->left_intern_p);
-//	LOG("left_sensor (method 2): extern_p = %d, intern_p = %d\n", p->left_extern_p, p->left_intern_p);
-//
-//	_cal_pron2( right_filtered, &right_A, &right_B, &p->right_intern_p, &p->right_extern_p);
-//	LOG("right_sensor (method 2): extern_p = %d, intern_p = %d\n", p->right_extern_p, p->right_intern_p);
-//
-//	_cal_pron3( &(p->data.left), &p->left_extern_p, &p->left_intern_p);
-//	LOG("left_sensor  (method 3): extern_p = %d, intern_p = %d\n", p->left_extern_p, p->left_intern_p);
-//
-//	_cal_pron3( &(p->data.right), &p->right_intern_p, &p->right_extern_p);
-//	LOG("right_sensor (method 3): extern_p = %d, intern_p = %d\n", p->right_extern_p, p->right_intern_p);
-//
-//	p->extern_p = p->left_extern_p + p->right_extern_p;
-//	p->intern_p = p->left_intern_p + p->right_intern_p;
-//
-//	LOG("PRO: extern_pressure = %d\n", p->extern_p);
-//	LOG("PRO: intern_pressure = %d\n", p->intern_p);
-
-	//_cal_pron4( t_acq_tab *p, bool isleft, t_pronation *pronation)
-
 	int8_t devg = 0, devd = 0, dev = 0;
 
-	//_cal_pron4( &(p->data.left), TRUE, &devg);
-	//_cal_pron4( &(p->data.right), FALSE, &devd);
 	_cal_pronation_matrix(&matrix_left_filtered,  TRUE, &devg);
 	_cal_pronation_matrix(&matrix_right_filtered,  FALSE, &devd);
 
 	dev = (devg + devd) / 2;
 
 	LOG("dev_total = %d\n", dev);
-
-	/*if( dev == 0)
-		p->pronation = NEUTRE_t;
-	else if( dev > 0)
-		p->pronation = CONTROL_t;
-	else
-		p->pronation = SUPINAL_t;*/
 
 	if( dev < -2 )
 			p->pronation = SUPINAL_t;
@@ -1434,21 +1377,12 @@ t_point right_A, right_B;
 
 	osDelay(100);
 
-//	if( abs( p->extern_p - p->intern_p) < (((p->extern_p + p->intern_p) * 20)/100) )
-//	{
-//		p->pronation = NEUTRE_t;
-//		LOG("Pronation: NEUTRE\n");
-//	}
-//	else if ( p->extern_p < p->intern_p)
-//	{
-//		p->pronation = CONTROL_t;
-//		LOG("Pronation: CONTROL\n");
-//	}
-//	else if ( p->extern_p > p->intern_p)
-//	{
-//		p->pronation = SUPINAL_t;
-//		LOG("Pronation: SUPINAL\n");
-//	}
+	_clear_matrix(p->matrix.left);
+	_clear_matrix(p->matrix.right);
+	_clear_matrix_bin(matrix_left_bin);
+	_clear_matrix_bin(matrix_right_bin);
+	_clear_matrix(matrix_left_filtered);
+	_clear_matrix(matrix_right_filtered);
 
 	return ret;
 }

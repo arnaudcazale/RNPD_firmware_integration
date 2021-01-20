@@ -191,6 +191,48 @@ _binarize_matrix_from_noise_margin( matrix_t inTab, matrix_bin_t outMat)
  * Return code  :
  * Description  :
  *******************************************************************************/
+t_return
+_clear_matrix( matrix_t inTab)
+{
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
+	{
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			inTab[i][j] = 0;
+		}
+	}
+
+	return E_OK;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+t_return
+_clear_matrix_bin( matrix_bin_t inTab)
+{
+	for( uint16_t i = 0; i < TOTAL_LINES; i++)
+	{
+		for( uint16_t j = 0; j < TOTAL_COL; j++)
+		{
+			inTab[i][j] = 0;
+		}
+	}
+
+	return E_OK;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
 uint8_t
 _get_median_line( t_bin_mat in)
 {
@@ -745,6 +787,11 @@ double offset = 5;
 
 	osDelay(100);
 
+	_clear_matrix(p->matrix.left);
+	_clear_matrix(p->matrix.right);
+	_clear_matrix_bin(matrix_left_bin);
+	_clear_matrix_bin(matrix_right_bin);
+
 	return E_OK;
 }
 
@@ -758,8 +805,8 @@ double offset = 5;
 t_return
 RND_Size_Get( t_measure *p)
 {
-static uint16_t cnt = 0;
-char filename[24];
+	static uint16_t cnt = 0;
+	char filename[24];
 
 	RND_Acq_Multiple_Start(5);
 	RND_Print("PENCHEZ-VOUS\nEN AVANT"); 	osDelay(4*SECOND);
@@ -777,8 +824,6 @@ char filename[24];
 
 	sprintf( filename, "Sz1_data_%d.csv\n", cnt);
 	RND_USB_Write_Size( &p->d1, filename);
-
-	//RND_Calc_AcqCsv( data, p, "data1.csv");
 
 	//RND_Print("NOUVELLE\nMESURE"); 		osDelay( 2*SECOND);
 	RND_Print("DEPLACEZ\nVOS\nAPPUIS"); osDelay( 2*SECOND);
@@ -808,7 +853,6 @@ char filename[24];
 	p->pointure = (p->d1.size + p->d2.size) / 2.0;
 	p->pointure = round(p->pointure*2)/2;
 	LOG("SIZE: TOTAL_SIZE : %f\n", p->pointure);
-
 
 	cnt++;
 	return E_OK;
