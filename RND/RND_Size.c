@@ -192,6 +192,24 @@ _binarize_matrix_from_noise_margin( matrix_t inTab, matrix_bin_t outMat)
  * Description  :
  *******************************************************************************/
 t_return
+_clear_data( t_acq_tab inTab)
+{
+	for( uint16_t i = 0; i < TOTAL_SENSORS_PER_SIDE; i++)
+	{
+		inTab[i] = 0;
+	}
+
+	return E_OK;
+}
+
+/*******************************************************************************
+ * Function     :
+ * Arguments    :
+ * Outputs      :
+ * Return code  :
+ * Description  :
+ *******************************************************************************/
+t_return
 _clear_matrix( matrix_t inTab)
 {
 	for( uint16_t i = 0; i < TOTAL_LINES; i++)
@@ -787,6 +805,8 @@ double offset = 5;
 
 	osDelay(100);
 
+	_clear_data(p->data.left);
+	_clear_data(p->data.right);
 	_clear_matrix(p->matrix.left);
 	_clear_matrix(p->matrix.right);
 	_clear_matrix_bin(matrix_left_bin);
@@ -822,8 +842,8 @@ RND_Size_Get( t_measure *p)
 	/* calculate size on average matrix */
 	_calc_size( &p->d1);
 
-	sprintf( filename, "Sz1_data_%d.csv\n", cnt);
-	RND_USB_Write_Size( &p->d1, filename);
+	//sprintf( filename, "Sz1_data_%d.csv\n", cnt);
+	//RND_USB_Write_Size( &p->d1, filename);
 
 	//RND_Print("NOUVELLE\nMESURE"); 		osDelay( 2*SECOND);
 	RND_Print("DEPLACEZ\nVOS\nAPPUIS"); osDelay( 2*SECOND);
@@ -847,8 +867,8 @@ RND_Size_Get( t_measure *p)
 	/* calculate size on average matrix */
 	_calc_size( &p->d2);
 
-	sprintf( filename, "Sz2_data_%d.csv\n", cnt);
-	RND_USB_Write_Size( &p->d2, filename);
+	//sprintf( filename, "Sz2_data_%d.csv\n", cnt);
+	//RND_USB_Write_Size( &p->d2, filename);
 
 	p->pointure = (p->d1.size + p->d2.size) / 2.0;
 	p->pointure = round(p->pointure*2)/2;

@@ -1377,6 +1377,8 @@ t_point right_A, right_B;
 
 	osDelay(100);
 
+	_clear_data(p->data.left);
+	_clear_data(p->data.right);
 	_clear_matrix(p->matrix.left);
 	_clear_matrix(p->matrix.right);
 	_clear_matrix_bin(matrix_left_bin);

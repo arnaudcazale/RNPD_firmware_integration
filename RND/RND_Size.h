@@ -55,6 +55,7 @@ t_return		_binarize_matrix	                    (matrix_t inTab, matrix_bin_t out
 t_return		_binarize_matrix_from_noise_margin	    (matrix_t inTab, matrix_bin_t outMat);
 void			_get_coord_extr_axial_left	            (matrix_bin_t in, uint8_t *xa, uint8_t *ya, uint8_t *xb, uint8_t *yb);
 void			_get_coord_extr_axial_right	            (matrix_bin_t in, uint8_t *xa, uint8_t *ya, uint8_t *xb, uint8_t *yb);
+t_return 	    _clear_data                             (t_acq_tab inTab);
 t_return 	    _clear_matrix                           (matrix_t inTab);
 t_return 	    _clear_matrix_bin                       (matrix_bin_t inTab);
 
