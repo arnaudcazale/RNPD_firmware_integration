@@ -19,6 +19,7 @@
  * Included Files
  *******************************************************************************/
 #include "RND_Main.h"
+#include "RND_Sequencer.h"
 
 /*******************************************************************************
  * Locals
@@ -1004,7 +1005,7 @@ t_col_zone	zy[10];
 
 	osDelay(100);
 
-	return ret;
+	return E_OK;
 }
 
 t_return
@@ -1248,7 +1249,7 @@ t_col_zone	zy[10];
 	{
 		/* sort and take biggest one */
 		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
-		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		//qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
 		index = 1;
 	}
 	else if( !index)
@@ -1423,7 +1424,7 @@ t_col_zone	zy[10];
 	{
 		/* sort and take biggest one */
 		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
-		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		//qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
 		index = 1;
 	}
 	else if( !index)
@@ -1539,8 +1540,17 @@ t_point right_A, right_B;
 	_filter_matrix( p->matrix.right, matrix_right_bin, matrix_right_filtered);
 
 #endif
-	RND_Gvt_Get_Zones( &matrix_left_filtered , &left_A,  &left_B);
-	RND_Gvt_Get_Zones( &matrix_right_filtered , &right_A,  &right_B);
+
+	ret = RND_Gvt_Get_Zones( &matrix_left_filtered , &left_A,  &left_B);
+	if(ret == E_ERROR){
+		RND_Print("ERROR\nRESTART");
+		osDelay(SECOND);
+	}
+	ret = RND_Gvt_Get_Zones( &matrix_right_filtered , &right_A,  &right_B);
+	if(ret == E_ERROR){
+		RND_Print("ERROR\nRESTART");
+		osDelay(SECOND);
+	}
 
 	p->left_lo = left_A;
 	p->left_hi = left_B;
@@ -1584,8 +1594,17 @@ t_point right_A, right_B;
 
 	double devg = 0, devd = 0, dev = 0;
 
-	_cal_pronation_matrix(&matrix_left_filtered,  TRUE, &devg);
-	_cal_pronation_matrix(&matrix_right_filtered,  FALSE, &devd);
+	ret = _cal_pronation_matrix(&matrix_left_filtered,  TRUE, &devg);
+	if(ret == E_ERROR){
+		RND_Print("ERROR\nRESTART");
+		osDelay(SECOND);
+	}
+
+	ret = _cal_pronation_matrix(&matrix_right_filtered,  FALSE, &devd);
+	if(ret == E_ERROR){
+		RND_Print("ERROR\nRESTART");
+		osDelay(SECOND);
+	}
 
 	dev = (devg + devd) / 2;
 
