@@ -72,6 +72,8 @@ typedef enum
 typedef enum
 {
 	NEUTRE_t,
+	NEUTRE_TENDANCE_SUPINAL_t,
+	NEUTRE_TENDANCE_CONTROL_t,
 	CONTROL_t,
 	SUPINAL_t,
 }	t_pronation;

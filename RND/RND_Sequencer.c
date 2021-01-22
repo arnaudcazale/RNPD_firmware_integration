@@ -164,11 +164,15 @@ RND_SEQ_Step_T3( void)
 	for (uint8_t i = 0; i < 2; i++)
 	{
 		if (gvt_data.pronation == NEUTRE_t)
-			RND_Print("TYPE DE\nFOULÉE\nNEUTRE");
+			RND_Print("FOULÉE\nNEUTRE");
+		else if (gvt_data.pronation == NEUTRE_TENDANCE_CONTROL_t)
+			RND_Print("FOULÉE\nNEUTRE/CONT");
+		else if (gvt_data.pronation == NEUTRE_TENDANCE_SUPINAL_t)
+					RND_Print("FOULÉE\nNEUTRE/SUP");
 		else if (gvt_data.pronation == CONTROL_t)
-			RND_Print("TYPE DE\nFOULÉE\nCONTROL");
+			RND_Print("FOULÉE\nCONTROL");
 		else if (gvt_data.pronation == SUPINAL_t)
-			RND_Print("TYPE DE\nFOULÉE\nSUPINAL");
+			RND_Print("FOULÉE\nSUPINAL");
 
 		osDelay(3 * SECOND);
 		RND_Print("POINTURE\nRUNNING\n%4.1f", pointure.pointure);

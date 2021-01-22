@@ -428,6 +428,10 @@ bool found = FALSE;
 	return TRUE;
 }
 
+//***********************************************************************
+//
+//
+//***********************************************************************
 t_return
 RND_Gvt_Get2( t_acq_tab *p, t_point *A, t_point *B)
 {
@@ -606,6 +610,224 @@ t_col_zone	zy[10];
 	return ret;
 }
 
+//***********************************************************************
+//
+//
+//***********************************************************************
+t_return
+RND_Gvt_Get_Neutral_Line_Left(matrix_t *mat, t_point *pA, t_point *pB)
+{
+	t_point A = {0,0};
+	t_point B = {0,0};
+	int median_line = 0;
+
+	RND_Gvt_Get_Zones( mat , &A,  &B);
+	median_line  = (A.line + B.line) / 2;
+	LOG("median_line = %d\n",median_line);
+
+	_binarize_matrix_from_noise_margin (*mat, matrix_left_bin);
+
+	//Make sum of each lines
+	int sum_col[TOTAL_LINES] = {0};
+	int sum = 0;
+
+	for(int i = 0; i<TOTAL_LINES; i++)
+	{
+		for(int j = 0 ; j < TOTAL_COL; j++){
+			sum+=matrix_left_bin[i][j];
+		}
+		sum_col[i] = sum;
+		sum = 0;
+	}
+
+	//Find center of largest line below median line, priority to lower line:
+	//Find index of larger line
+	int max = 0;
+	int lineMaxLow = 0;
+	for(int i = median_line; i>=0; i--)
+	{
+		if(sum_col[i] >= max)
+		{
+			lineMaxLow = i;
+			max = sum_col[i];
+		}
+	}
+	//Find left beggining of largest line
+	int startCol = 0;
+	for(int j = 0; j<TOTAL_COL; j++)
+	{
+		if(matrix_left_bin[lineMaxLow][j] == 1){
+			startCol = j;
+		 break;
+		}
+	}
+	//Find right end of largest line
+	int stopCol = 0;
+	for(int j = TOTAL_COL-1; j>=0; j--)
+	{
+		if(matrix_left_bin[lineMaxLow][j] == 1){
+			stopCol = j;
+		 break;
+		}
+	}
+	double centerColLow = ceil( ((double)stopCol-(double)startCol)/2 ) + startCol;
+
+	pB->col = (int)centerColLow;
+	pB->line = lineMaxLow;
+	LOG("pB_col = %d, pB_line = %d\n", pB->col, pB->line);
+
+
+	//Find center largest line above median line, priority to lower line:
+	//Find index of larger line
+	max = 0;
+	int lineMaxHi = 0;
+	for(int i = median_line; i<TOTAL_LINES; i++)
+	{
+		if(sum_col[i] >= max)
+		{
+			lineMaxHi = i;
+			max = sum_col[i];
+		}
+	}
+	//Find left beggining of largest line
+	startCol = 0;
+	for(int j = 0; j<TOTAL_COL; j++)
+	{
+		if(matrix_left_bin[lineMaxHi][j] == 1){
+			startCol = j;
+		 break;
+		}
+	}
+	//Find right end of largest line
+	stopCol = 0;
+	for(int j = TOTAL_COL-1; j>=0; j--)
+	{
+		if(matrix_left_bin[lineMaxHi][j] == 1){
+			stopCol = j;
+		 break;
+		}
+	}
+
+	double centerColHi = ceil( ((double)stopCol-(double)startCol)/2 ) + startCol;
+
+	pA->col = (int)centerColHi;
+	pA->line = lineMaxHi;
+	LOG("pA_col = %d, pA_line = %d\n", pA->col, pA->line);
+
+	return TRUE;
+}
+
+//***********************************************************************
+//
+//
+//***********************************************************************
+t_return
+RND_Gvt_Get_Neutral_Line_Right(matrix_t *mat, t_point *pA, t_point *pB)
+{
+	t_point A = {0,0};
+	t_point B = {0,0};
+	int median_line = 0;
+
+	RND_Gvt_Get_Zones( mat , &A,  &B);
+	median_line  = (A.line + B.line) / 2;
+	LOG("median_line = %d\n",median_line);
+
+	_binarize_matrix_from_noise_margin (*mat, matrix_right_bin);
+
+	//Make sum of each lines
+	int sum_col[TOTAL_LINES] = {0};
+	int sum = 0;
+
+	for(int i = 0; i<TOTAL_LINES; i++)
+	{
+		for(int j = 0 ; j < TOTAL_COL; j++){
+			sum+=matrix_right_bin[i][j];
+		}
+		sum_col[i] = sum;
+		sum = 0;
+	}
+
+	//Find center of largest line below median line, priority to lower line:
+	//Find index of larger line
+	int max = 0;
+	int lineMaxLow = 0;
+	for(int i = median_line; i>=0; i--)
+	{
+		if(sum_col[i] >= max)
+		{
+			lineMaxLow = i;
+			max = sum_col[i];
+		}
+	}
+	//Find left beggining of largest line
+	int startCol = 0;
+	for(int j = 0; j<TOTAL_COL; j++)
+	{
+		if(matrix_right_bin[lineMaxLow][j] == 1){
+			startCol = j;
+		 break;
+		}
+	}
+	//Find right end of largest line
+	int stopCol = 0;
+	for(int j = TOTAL_COL-1; j>=0; j--)
+	{
+		if(matrix_right_bin[lineMaxLow][j] == 1){
+			stopCol = j;
+		 break;
+		}
+	}
+	double centerColLow = ceil( ((double)stopCol-(double)startCol)/2 ) + startCol;
+
+	pB->col = (int)centerColLow;
+	pB->line = lineMaxLow;
+	LOG("pB_col = %d, pB_line = %d\n", pB->col, pB->line);
+
+
+	//Find center largest line above median line, priority to lower line:
+	//Find index of larger line
+	max = 0;
+	int lineMaxHi = 0;
+	for(int i = median_line; i<TOTAL_LINES; i++)
+	{
+		if(sum_col[i] >= max)
+		{
+			lineMaxHi = i;
+			max = sum_col[i];
+		}
+	}
+	//Find left beggining of largest line
+	startCol = 0;
+	for(int j = 0; j<TOTAL_COL; j++)
+	{
+		if(matrix_right_bin[lineMaxHi][j] == 1){
+			startCol = j;
+		 break;
+		}
+	}
+	//Find right end of largest line
+	stopCol = 0;
+	for(int j = TOTAL_COL-1; j>=0; j--)
+	{
+		if(matrix_right_bin[lineMaxHi][j] == 1){
+			stopCol = j;
+		 break;
+		}
+	}
+
+	double centerColHi = ceil( ((double)stopCol-(double)startCol)/2 ) + startCol;
+
+	pA->col = (int)centerColHi;
+	pA->line = lineMaxHi;
+	LOG("pA_col = %d, pA_line = %d\n", pA->col, pA->line);
+
+	return TRUE;
+}
+
+//***********************************************************************
+//
+//
+//***********************************************************************
 t_return
 RND_Gvt_Get_Zones( matrix_t *p, t_point *A, t_point *B)
 {
@@ -1102,7 +1324,7 @@ t_col_zone	zy[10];
 //
 //*********************************************************
 t_return
-_cal_pronation_matrix( matrix_t *p, bool isleft, int8_t *dev)
+_cal_pronation_matrix( matrix_t *p, bool isleft, double *dev)
 {
 uint32_t	line_sum[TOTAL_LINES];
 uint32_t	col_sum[TOTAL_COL];
@@ -1231,42 +1453,43 @@ t_col_zone	zy[10];
 
 	LOG("Barycentre line=%d, col=%d\n", bi, bj);
 
-	t_point A, B;
-	double a, b;
+	t_point pA = {0,0};
+	t_point pB = {0,0};
 	matrix_t *mat = (matrix_t *)p;
 	if( isleft == TRUE)
 	{
-		RND_Gvt_Get_Axis_Left( *mat, &A,  &B);
+		RND_Gvt_Get_Neutral_Line_Left(mat, &pA, &pB);
+		LOG("pB_col = %d, pB_line = %d\n", pB.col, pB.line);
+		LOG("pA_col = %d, pA_line = %d\n", pA.col, pA.line);
 
-		a = ((double)B.col - (double)A.col) / ((double)B.line - (double)A.line);
-		b =  (double)A.col - (a * (double)A.line);
+		double a = ( (double)pA.line - (double)pB.line ) / ( (double)pA.col - (double)pB.col )  ;
+		double b = (double)pA.line - (a * (double)pA.col);
+		LOG("y = %5.2f x + %5.2f\n",a ,b);
 
-		double tcol = (double)bi * a + b;
-		//tcol -= 2.;
-
+		double tcol = ((double)bi - b) / a;
 		*dev = bj - tcol;
 
-		LOG("Left: dev = %d\n", *dev);
+		LOG("Left: dev = %5.2f\n", *dev);
+		osDelay(100);
 
 	}
 	else
 	{
-		RND_Gvt_Get_Axis_Right( *mat, &A,  &B);
+		RND_Gvt_Get_Neutral_Line_Right(mat, &pA, &pB);
+		LOG("pB_col = %d, pB_line = %d\n", pB.col, pB.line);
+		LOG("pA_col = %d, pA_line = %d\n", pA.col, pA.line);
 
-		a = ((double)B.col - (double)A.col) / ((double)B.line - (double)A.line);
-		b =  (double)A.col - (a * (double)A.line);
+		double a = ( (double)pA.line - (double)pB.line ) / ( (double)pA.col - (double)pB.col )  ;
+		double b = (double)pA.line - (a * (double)pA.col);
+		LOG("y = %5.2f x + %5.2f\n",a ,b);
 
-		double tcol = (double)bi * a + b;
-		//tcol += 2.;
-
+		double tcol = ((double)bi - b) / a;
 		*dev = tcol - bj;
 
-		LOG("Right: dev = %d\n", *dev);
+		LOG("Right: dev = %5.2f\n", *dev);
 
-		/*
-		 * dev > 0 control;
-		 * dev < 0 supinal;
-		 */
+		osDelay(100);
+
 	}
 
 	return E_OK;
@@ -1359,21 +1582,26 @@ t_point right_A, right_B;
 
 	osDelay(100);
 
-	int8_t devg = 0, devd = 0, dev = 0;
+	double devg = 0, devd = 0, dev = 0;
 
 	_cal_pronation_matrix(&matrix_left_filtered,  TRUE, &devg);
 	_cal_pronation_matrix(&matrix_right_filtered,  FALSE, &devd);
 
 	dev = (devg + devd) / 2;
 
-	LOG("dev_total = %d\n", dev);
+	LOG("dev_total = %5.2f\n", dev);
 
-	if( dev < -2 )
-			p->pronation = SUPINAL_t;
-		else if( dev > 0)
-			p->pronation = CONTROL_t;
-		else
-			p->pronation = NEUTRE_t;
+	if( dev < -3)
+		p->pronation = SUPINAL_t;
+	    else if( dev > 3)
+	    	p->pronation = CONTROL_t;
+	    else if( (dev >=-3) && (dev <=-1.5) )
+	    	p->pronation = NEUTRE_TENDANCE_SUPINAL_t;
+	    else if( (dev >=1.5) && (dev <=3) )
+	    	p->pronation = NEUTRE_TENDANCE_CONTROL_t;
+	    else
+	    	p->pronation = NEUTRE_t;
+
 
 	osDelay(100);
 

@@ -41,6 +41,7 @@
  * Exported
  *******************************************************************************/
 t_return		RND_Gvt_Get				( t_gvt_data *p);
+t_return        RND_Gvt_Get_Zones       (matrix_t *mat, t_point *A, t_point *B);
 
 #endif
 /*** End Of File ***/
