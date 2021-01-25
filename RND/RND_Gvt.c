@@ -865,7 +865,7 @@ t_col_zone	zy[10];
 			zx[index].index = index;
 			zx[index].start_line = i;
 		}
-		if( ((line_sum[i] <= moy) || (i==TOTAL_LINES-1)) && (val >= moy))
+		else if( ((line_sum[i] <= moy) || (i==TOTAL_LINES-1)) && (val >= moy))
 		{
 			zx[index].end_line = i;
 			zx[index].n_lines = zx[index].end_line - zx[index].start_line;
@@ -915,8 +915,7 @@ t_col_zone	zy[10];
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else
-		if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
@@ -931,7 +930,7 @@ t_col_zone	zy[10];
 	{
 		/* sort and take biggest one */
 		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
-		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		//qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
 		index = 1;
 	}
 	else if( !index)
@@ -968,8 +967,7 @@ t_col_zone	zy[10];
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else
-		if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
@@ -984,7 +982,7 @@ t_col_zone	zy[10];
 	{
 		/* sort and take biggest one */
 		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
-		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		//qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
 		index = 1;
 	}
 	else if (!index)
@@ -1040,8 +1038,7 @@ t_col_zone	zy[10];
 			zx[index].index = index;
 			zx[index].start_line = i;
 		}
-		else
-		if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
+		else if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
 		{
 			zx[index].end_line = i;
 			zx[index].n_lines = zx[index].end_line - zx[index].start_line;
@@ -1056,7 +1053,7 @@ t_col_zone	zy[10];
 	if( index > 2)
 	{
 		/* sort and take the two biggest zones */
-		qsort( (void *)zx, index, sizeof(t_line_zone), compare_n_lines);
+		//qsort( (void *)zx, index, sizeof(t_line_zone), compare_n_lines);
 		qsort( (void *)zx, 2, sizeof(t_line_zone), compare_index);
 		index = 2;
 	}
@@ -1089,8 +1086,7 @@ t_col_zone	zy[10];
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else
-		if( ((col_sum[i] < moy)||(i == (TOTAL_COL/2)-1)) && (val > moy))
+		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL/2)-1)) && (val > moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
@@ -1106,7 +1102,7 @@ t_col_zone	zy[10];
 	{
 		/* sort and take biggest one */
 		qsort( (void *)zy, index, sizeof(t_col_zone), compare_n_cols);
-		qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
+		//qsort( (void *)zy, index, sizeof(t_col_zone), compare_index);
 		index = 1;
 	}
 	else if( !index)
@@ -1356,8 +1352,7 @@ t_col_zone	zy[10];
 			zx[index].index = index;
 			zx[index].start_line = i;
 		}
-		else
-		if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
+		else if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
 		{
 			zx[index].end_line = i;
 			zx[index].n_lines = zx[index].end_line - zx[index].start_line;
@@ -1405,8 +1400,7 @@ t_col_zone	zy[10];
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else
-		if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
