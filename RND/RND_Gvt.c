@@ -910,12 +910,12 @@ t_col_zone	zy[10];
 	val = index = 0;
 	for( uint8_t i = 0; i < TOTAL_COL; i++)
 	{
-		if( (col_sum[i] > moy) && (val < moy))
+		if( (col_sum[i] >= moy) && (val <= moy))
 		{
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		else if( ((col_sum[i] <= moy)||(i == (TOTAL_COL)-1)) && (val >= moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
@@ -962,12 +962,12 @@ t_col_zone	zy[10];
 	val = index = 0;
 	for( uint8_t i = 0; i < TOTAL_COL; i++)
 	{
-		if( (col_sum[i] > moy) && (val < moy))
+		if( (col_sum[i] >= moy) && (val <= moy))
 		{
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		else if( ((col_sum[i] <= moy)||(i == (TOTAL_COL)-1)) && (val >= moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
@@ -1347,12 +1347,12 @@ t_col_zone	zy[10];
 	val = index = 0;
 	for( uint8_t i = 0; i < TOTAL_LINES; i++)
 	{
-		if( (line_sum[i] > moy) && (val < moy))
+		if( (line_sum[i] >= moy) && (val <= moy))
 		{
 			zx[index].index = index;
 			zx[index].start_line = i;
 		}
-		else if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
+		else if( ((line_sum[i] <= moy) || (i==TOTAL_LINES-1)) && (val >= moy))
 		{
 			zx[index].end_line = i;
 			zx[index].n_lines = zx[index].end_line - zx[index].start_line;
@@ -1395,12 +1395,12 @@ t_col_zone	zy[10];
 	val = index = 0;
 	for( uint8_t i = 0; i < TOTAL_COL; i++)
 	{
-		if( (col_sum[i] > moy) && (val < moy))
+		if( (col_sum[i] >= moy) && (val <= moy))
 		{
 			zy[index].index = index;
 			zy[index].start_col = i;
 		}
-		else if( ((col_sum[i] < moy)||(i == (TOTAL_COL)-1)) && (val > moy))
+		else if( ((col_sum[i] <= moy)||(i == (TOTAL_COL)-1)) && (val >= moy))
 		{
 			zy[index].end_col = i;
 			zy[index].n_cols = zy[index].end_col - zy[index].start_col;
