@@ -832,13 +832,12 @@ RND_Gvt_Get_Neutral_Line_Right(matrix_t *mat, t_point *pA, t_point *pB)
 t_return
 RND_Gvt_Get_Zones( matrix_t *p, t_point *A, t_point *B)
 {
-t_return ret = E_ERROR;
 
 uint32_t	line_sum[TOTAL_LINES];
 uint32_t	col_sum[TOTAL_COL];
-uint32_t	moy;
-uint8_t		index;
-uint16_t	val;
+uint32_t	moy = 0;
+uint8_t		index = 0;
+uint16_t	val = 0;
 
 t_line_zone	zx[10];
 t_col_zone	zy[10];
@@ -861,13 +860,12 @@ t_col_zone	zy[10];
 	val = index = 0;
 	for( uint8_t i = 0; i < TOTAL_LINES; i++)
 	{
-		if( (line_sum[i] > moy) && (val < moy))
+		if( (line_sum[i] >= moy) && (val <= moy))
 		{
 			zx[index].index = index;
 			zx[index].start_line = i;
 		}
-		else
-		if( ((line_sum[i] < moy) || (i==TOTAL_LINES-1)) && (val > moy))
+		if( ((line_sum[i] <= moy) || (i==TOTAL_LINES-1)) && (val >= moy))
 		{
 			zx[index].end_line = i;
 			zx[index].n_lines = zx[index].end_line - zx[index].start_line;
@@ -1496,6 +1494,8 @@ t_col_zone	zy[10];
 	return E_OK;
 }
 
+
+
 /*******************************************************************************
  * Function     :
  * Arguments    :
@@ -1507,8 +1507,10 @@ t_return
 RND_Gvt_Get( t_gvt_data *p)
 {
 t_return ret = E_ERROR;
-t_point left_A, left_B;
-t_point right_A, right_B;
+t_point left_A = {0,0};
+t_point left_B = {0,0};
+t_point right_A = {0,0};
+t_point right_B = {0,0};
 
 	LOG("GVT calculation\n");
 
@@ -1543,13 +1545,15 @@ t_point right_A, right_B;
 
 	ret = RND_Gvt_Get_Zones( &matrix_left_filtered , &left_A,  &left_B);
 	if(ret == E_ERROR){
-		RND_Print("ERROR\nRESTART");
-		osDelay(SECOND);
+		RND_Print("GRAVITY\nPOSITION\nERROR");
+		osDelay(2*SECOND);
+		return ret;
 	}
 	ret = RND_Gvt_Get_Zones( &matrix_right_filtered , &right_A,  &right_B);
 	if(ret == E_ERROR){
-		RND_Print("ERROR\nRESTART");
-		osDelay(SECOND);
+		RND_Print("GRAVITY\nPOSITION\nERROR");
+		osDelay(2*SECOND);
+		return ret;
 	}
 
 	p->left_lo = left_A;
@@ -1596,14 +1600,16 @@ t_point right_A, right_B;
 
 	ret = _cal_pronation_matrix(&matrix_left_filtered,  TRUE, &devg);
 	if(ret == E_ERROR){
-		RND_Print("ERROR\nRESTART");
-		osDelay(SECOND);
+		RND_Print("PRONATION\nDETECTION\nERROR");
+		osDelay(2*SECOND);
+		return ret;
 	}
 
 	ret = _cal_pronation_matrix(&matrix_right_filtered,  FALSE, &devd);
 	if(ret == E_ERROR){
-		RND_Print("ERROR\nRESTART");
-		osDelay(SECOND);
+		RND_Print("PRONATION\nDETECTION\nERROR");
+		osDelay(2*SECOND);
+		return ret;
 	}
 
 	dev = (devg + devd) / 2;
@@ -1624,14 +1630,16 @@ t_point right_A, right_B;
 
 	osDelay(100);
 
-	_clear_data(p->data.left);
+	//Clear all matrix
+
+	/*_clear_data(p->data.left);
 	_clear_data(p->data.right);
 	_clear_matrix(p->matrix.left);
 	_clear_matrix(p->matrix.right);
 	_clear_matrix_bin(matrix_left_bin);
 	_clear_matrix_bin(matrix_right_bin);
 	_clear_matrix(matrix_left_filtered);
-	_clear_matrix(matrix_right_filtered);
+	_clear_matrix(matrix_right_filtered);*/
 
 	return ret;
 }

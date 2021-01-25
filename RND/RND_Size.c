@@ -244,6 +244,7 @@ _clear_matrix_bin( matrix_bin_t inTab)
 	return E_OK;
 }
 
+
 /*******************************************************************************
  * Function     :
  * Arguments    :
@@ -743,7 +744,10 @@ matrix_t *in = (matrix_t *)tab;
 static t_return
 _calc_size( t_sz_data *p)
 {
-uint8_t xa, ya, xb, yb;
+uint8_t xa = 0;
+uint8_t ya = 0;
+uint8_t xb = 0;
+uint8_t yb = 0;
 double  a1 = 0;
 double offset = 5;
 
@@ -805,12 +809,13 @@ double offset = 5;
 
 	osDelay(100);
 
-	_clear_data(p->data.left);
+	//Clear matrix
+	/*_clear_data(p->data.left);
 	_clear_data(p->data.right);
 	_clear_matrix(p->matrix.left);
 	_clear_matrix(p->matrix.right);
 	_clear_matrix_bin(matrix_left_bin);
-	_clear_matrix_bin(matrix_right_bin);
+	_clear_matrix_bin(matrix_right_bin);*/
 
 	return E_OK;
 }

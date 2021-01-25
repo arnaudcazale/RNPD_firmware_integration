@@ -103,6 +103,7 @@ uint8_t count = 20;
 static t_seq_state
 RND_SEQ_Step_T3( void)
 {
+	t_return ret;
 	RND_Print("main"); osDelay(10);
 	LOG("Sequencer state = T3\n");
 
@@ -152,14 +153,26 @@ RND_SEQ_Step_T3( void)
 
 	/* Pronation et Gravity drop */
 	static t_gvt_data gvt_data = {0};
-	RND_Gvt_Get( &gvt_data);
+	ret = RND_Gvt_Get( &gvt_data);
+	if(ret == E_ERROR)
+	{
+		RND_Print("RESTART\nMEASURE");
+		osDelay(3 * SECOND);
+		return SEQ_T4;
+	}
 
 	//sprintf( filename, "GVT_Data_%d.csv\n", cnt);
 	//RND_USB_Write_Gvt( &gvt_data, filename);
 
 	/* Pointure */
 	static t_measure pointure = {0};
-	RND_Size_Get( &pointure);
+	ret = RND_Size_Get( &pointure);
+	if(ret == E_ERROR)
+	{
+		RND_Print("RESTART\nMEASURE");
+		osDelay(3 * SECOND);
+		return SEQ_T4;
+	}
 
 	for (uint8_t i = 0; i < 2; i++)
 	{
