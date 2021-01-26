@@ -190,7 +190,7 @@ RND_USB_Write_Gvt( t_gvt_data *p, char *filename)
 t_return ret = E_ERROR;
 FRESULT	fr;
 FIL		fp;
-uint16_t	index;
+//uint16_t	index;
 
 	if( RND_Usb_IsPresent() != TRUE)
 	{
@@ -230,15 +230,23 @@ uint16_t	index;
 	sprintf( buff, "%5.2f", p->gvt); f_printf( &fp, "gvt = %s\n", buff);
 	f_printf( &fp, "igvt = %d\n", p->igvt);
 	f_printf( &fp, "PRO: \n");
-	f_printf( &fp, "left_extern_pressure = %d\n", p->left_extern_p);
+	/*f_printf( &fp, "left_extern_pressure = %d\n", p->left_extern_p);
 	f_printf( &fp, "left_intern_pressure = %d\n", p->left_intern_p);
 	f_printf( &fp, "right_extern_pressure = %d\n", p->right_extern_p);
 	f_printf( &fp, "right_intern_pressure = %d\n", p->right_intern_p);
 	f_printf( &fp, "total_extern_pressure = %d\n", p->extern_p);
-	f_printf( &fp, "total_intern_pressure = %d\n", p->intern_p);
+	f_printf( &fp, "total_intern_pressure = %d\n", p->intern_p);*/
 	if( p->pronation == NEUTRE_t)
 	{
 		f_printf( &fp, "pronation = NEUTRE\n");
+	}
+	else if( p->pronation == NEUTRE_TENDANCE_CONTROL_t)
+	{
+		f_printf( &fp, "pronation = NEUTRE/CONT\n");
+	}
+	else if( p->pronation == NEUTRE_TENDANCE_SUPINAL_t)
+	{
+		f_printf( &fp, "pronation = NEUTRE/SUP\n");
 	}
 	else if( p->pronation == CONTROL_t)
 	{
@@ -252,7 +260,7 @@ uint16_t	index;
 	f_sync( &fp);
 	f_printf( &fp, "\n\n");
 
-	for( uint8_t lines = 0; lines < TOTAL_LINES; lines ++)
+	/*for( uint8_t lines = 0; lines < TOTAL_LINES; lines ++)
 	{
 		f_printf( &fp, ";;;");
 
@@ -272,6 +280,31 @@ uint16_t	index;
 			{
 				f_printf( &fp, "\"%d\"", p->data.right[index]);
 				if( index & !((index+1)%8))
+					f_printf( &fp, "\n");
+				else
+					f_printf( &fp, ";");
+			}
+		}
+	}*/
+
+	for( int lines = TOTAL_LINES-1; lines >= 0; lines --)
+	{
+		f_printf( &fp, ";;;");
+
+		for( uint8_t cols = 0; cols < TOTAL_COL*2; cols ++)
+		{
+			if( cols < TOTAL_COL)
+			{
+				f_printf( &fp, "\"%d\"", p->matrix.left[lines][cols]);
+				if(cols == (TOTAL_COL-1) )
+					f_printf( &fp, ";;");
+				else
+					f_printf( &fp, ";");
+			}
+			else
+			{
+				f_printf( &fp, "\"%d\"", p->matrix.right[lines][cols-TOTAL_COL]);
+				if( cols ==  (TOTAL_COL*2)-1 )
 					f_printf( &fp, "\n");
 				else
 					f_printf( &fp, ";");

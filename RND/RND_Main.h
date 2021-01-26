@@ -128,13 +128,15 @@ typedef	struct
 
 	double		gvt;
 	uint8_t		igvt;
-
-	uint32_t 	left_extern_p;
+	t_point		barycentre_left;
+	t_point		barycentre_right;
+	/*uint32_t 	left_extern_p;
 	uint32_t	left_intern_p;
 	uint32_t 	right_extern_p;
 	uint32_t	right_intern_p;
 	uint32_t 	extern_p;
-	uint32_t	intern_p;
+	uint32_t	intern_p;*/
+
 	t_pronation	pronation;
 }	t_gvt_data;
 

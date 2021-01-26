@@ -161,8 +161,8 @@ RND_SEQ_Step_T3( void)
 		return SEQ_T4;
 	}
 
-	//sprintf( filename, "GVT_Data_%d.csv\n", cnt);
-	//RND_USB_Write_Gvt( &gvt_data, filename);
+	sprintf( filename, "GVT_Data_%d.csv\n", cnt);
+	RND_USB_Write_Gvt( &gvt_data, filename);
 
 	/* Pointure */
 	static t_measure pointure = {0};

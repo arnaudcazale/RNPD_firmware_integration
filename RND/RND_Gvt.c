@@ -1444,6 +1444,7 @@ t_col_zone	zy[10];
 	bi /= coef_sum;
 	bj /= coef_sum;
 
+
 	LOG("Barycentre line=%d, col=%d\n", bi, bj);
 
 	t_point pA = {0,0};
@@ -1625,7 +1626,6 @@ t_point right_B = {0,0};
 	osDelay(100);
 
 	//Clear all matrix
-
 	/*_clear_data(p->data.left);
 	_clear_data(p->data.right);
 	_clear_matrix(p->matrix.left);

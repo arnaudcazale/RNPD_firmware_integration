@@ -848,8 +848,8 @@ RND_Size_Get( t_measure *p)
 	/* calculate size on average matrix */
 	_calc_size( &p->d1);
 
-	//sprintf( filename, "Sz1_data_%d.csv\n", cnt);
-	//RND_USB_Write_Size( &p->d1, filename);
+	sprintf( filename, "Sz1_data_%d.csv\n", cnt);
+	RND_USB_Write_Size( &p->d1, filename);
 
 	//RND_Print("NOUVELLE\nMESURE"); 		osDelay( 2*SECOND);
 	RND_Print("DEPLACEZ\nVOS\nAPPUIS"); osDelay( 2*SECOND);
@@ -873,8 +873,8 @@ RND_Size_Get( t_measure *p)
 	/* calculate size on average matrix */
 	_calc_size( &p->d2);
 
-	//sprintf( filename, "Sz2_data_%d.csv\n", cnt);
-	//RND_USB_Write_Size( &p->d2, filename);
+	sprintf( filename, "Sz2_data_%d.csv\n", cnt);
+	RND_USB_Write_Size( &p->d2, filename);
 
 	p->pointure = (p->d1.size + p->d2.size) / 2.0;
 	p->pointure = round(p->pointure*2)/2;
