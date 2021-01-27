@@ -97,6 +97,12 @@ typedef	struct
 	uint8_t	col;
 }	t_point;
 
+typedef	struct
+{
+	t_point	heel;
+	t_point	toe;
+}	t_line;
+
 typedef struct
 {
 	t_acq_tab 	left;
@@ -130,6 +136,11 @@ typedef	struct
 	uint8_t		igvt;
 	t_point		barycentre_left;
 	t_point		barycentre_right;
+	t_line		neutral_left;
+	t_line      neutral_right;
+	double      dev_left;
+	double      dev_right;
+	double		dev_total;
 	/*uint32_t 	left_extern_p;
 	uint32_t	left_intern_p;
 	uint32_t 	right_extern_p;

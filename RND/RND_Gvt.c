@@ -1319,7 +1319,7 @@ t_col_zone	zy[10];
 //
 //*********************************************************
 t_return
-_cal_pronation_matrix( matrix_t *p, bool isleft, double *dev)
+_cal_pronation_matrix(t_gvt_data *gvt, matrix_t *p, bool isleft, double *dev)
 {
 uint32_t	line_sum[TOTAL_LINES];
 uint32_t	col_sum[TOTAL_COL];
@@ -1450,20 +1450,41 @@ t_col_zone	zy[10];
 	t_point pA = {0,0};
 	t_point pB = {0,0};
 	matrix_t *mat = (matrix_t *)p;
+	double a = 0;
+	double b = 0;
+	double tcol = 0;
+
 	if( isleft == TRUE)
 	{
 		RND_Gvt_Get_Neutral_Line_Left(mat, &pA, &pB);
 		LOG("pB_col = %d, pB_line = %d\n", pB.col, pB.line);
 		LOG("pA_col = %d, pA_line = %d\n", pA.col, pA.line);
 
-		double a = ( (double)pA.line - (double)pB.line ) / ( (double)pA.col - (double)pB.col )  ;
-		double b = (double)pA.line - (a * (double)pA.col);
-		LOG("y = %5.2f x + %5.2f\n",a ,b);
+		if(pA.col == pB.col)
+		{
+			LOG("vertical line");
+			tcol = pA.col;
+		}else
+		{
+			LOG("fonction affine");
+			a = ( (double)pA.line - (double)pB.line ) / ( (double)pA.col - (double)pB.col )  ;
+			b = (double)pA.line - (a * (double)pA.col);
+			LOG("y = %5.2f x + %5.2f\n",a ,b);
+			tcol = ((double)bi - b) / a;
+		}
 
-		double tcol = ((double)bi - b) / a;
 		*dev = bj - tcol;
 
 		LOG("Left: dev = %5.2f\n", *dev);
+
+		gvt->barycentre_left.line   = bi;
+		gvt->barycentre_left.col    = bj;
+		gvt->neutral_left.toe.line  = pA.line;
+		gvt->neutral_left.toe.col   = pA.col;
+		gvt->neutral_left.heel.line = pB.line;
+		gvt->neutral_left.heel.col  = pB.col;
+		gvt->dev_left  = *dev;
+
 		osDelay(100);
 
 	}
@@ -1473,14 +1494,30 @@ t_col_zone	zy[10];
 		LOG("pB_col = %d, pB_line = %d\n", pB.col, pB.line);
 		LOG("pA_col = %d, pA_line = %d\n", pA.col, pA.line);
 
-		double a = ( (double)pA.line - (double)pB.line ) / ( (double)pA.col - (double)pB.col )  ;
-		double b = (double)pA.line - (a * (double)pA.col);
-		LOG("y = %5.2f x + %5.2f\n",a ,b);
+		if(pA.col == pB.col)
+		{
+			LOG("vertical line\n");
+			tcol = pA.col;
+		}else
+		{
+			LOG("fonction affine\n");
+			a = ( (double)pA.line - (double)pB.line ) / ( (double)pA.col - (double)pB.col )  ;
+			b = (double)pA.line - (a * (double)pA.col);
+			LOG("y = %5.2f x + %5.2f\n",a ,b);
+			tcol = ((double)bi - b) / a;
+		}
 
-		double tcol = ((double)bi - b) / a;
 		*dev = tcol - bj;
 
 		LOG("Right: dev = %5.2f\n", *dev);
+
+		gvt->barycentre_right.line   = bi;
+		gvt->barycentre_right.col    = bj;
+		gvt->neutral_right.toe.line  = pA.line;
+		gvt->neutral_right.toe.col   = pA.col;
+		gvt->neutral_right.heel.line = pB.line;
+		gvt->neutral_right.heel.col  = pB.col;
+		gvt->dev_right  = *dev;
 
 		osDelay(100);
 
@@ -1593,14 +1630,14 @@ t_point right_B = {0,0};
 
 	double devg = 0, devd = 0, dev = 0;
 
-	ret = _cal_pronation_matrix(&matrix_left_filtered,  TRUE, &devg);
+	ret = _cal_pronation_matrix(p, &matrix_left_filtered,  TRUE, &devg);
 	if(ret == E_ERROR){
 		RND_Print("PRONATION\nDETECTION\nERROR");
 		osDelay(2*SECOND);
 		return ret;
 	}
 
-	ret = _cal_pronation_matrix(&matrix_right_filtered,  FALSE, &devd);
+	ret = _cal_pronation_matrix(p, &matrix_right_filtered,  FALSE, &devd);
 	if(ret == E_ERROR){
 		RND_Print("PRONATION\nDETECTION\nERROR");
 		osDelay(2*SECOND);
@@ -1608,6 +1645,7 @@ t_point right_B = {0,0};
 	}
 
 	dev = (devg + devd) / 2;
+	p->dev_total = dev;
 
 	LOG("dev_total = %5.2f\n", dev);
 

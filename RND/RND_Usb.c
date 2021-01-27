@@ -215,7 +215,7 @@ FIL		fp;
 	f_printf( &fp, "Runpad, version %s\n", RND_GetVersionString());
 	f_printf( &fp, "\n");
 	f_printf( &fp, "Donnees de pronation et de gravity drop\n");
-	f_printf( &fp, "GVT: \n");
+	f_printf( &fp, "GRAVITY: \n");
 	f_printf( &fp, "left_hi line=%d, col=%d\n", p->left_hi.line, p->left_hi.col);
 	f_printf( &fp, "left_lo line=%d, col=%d\n", p->left_lo.line, p->left_lo.col);
 	f_printf( &fp, "right_hi line=%d, col=%d\n", p->right_hi.line, p->right_hi.col);
@@ -229,13 +229,17 @@ FIL		fp;
 	f_printf( &fp, "total_sum = %d\n", p->total_sum);
 	sprintf( buff, "%5.2f", p->gvt); f_printf( &fp, "gvt = %s\n", buff);
 	f_printf( &fp, "igvt = %d\n", p->igvt);
-	f_printf( &fp, "PRO: \n");
-	/*f_printf( &fp, "left_extern_pressure = %d\n", p->left_extern_p);
-	f_printf( &fp, "left_intern_pressure = %d\n", p->left_intern_p);
-	f_printf( &fp, "right_extern_pressure = %d\n", p->right_extern_p);
-	f_printf( &fp, "right_intern_pressure = %d\n", p->right_intern_p);
-	f_printf( &fp, "total_extern_pressure = %d\n", p->extern_p);
-	f_printf( &fp, "total_intern_pressure = %d\n", p->intern_p);*/
+	f_printf( &fp, "PRONATION: \n");
+	f_printf( &fp, "barycentre_left: line=%d, col=%d\n", p->barycentre_left.line, p->barycentre_left.col);
+	f_printf( &fp, "neutral_line_left_toe: line=%d, col=%d\n", p->neutral_left.toe.line, p->neutral_left.toe.col);
+	f_printf( &fp, "neutral_line_left_heel: line=%d, col=%d\n", p->neutral_left.heel.line, p->neutral_left.heel.col);
+	sprintf( buff, "%5.2f", p->dev_left); f_printf( &fp, "dev_left = %s\n", buff);
+	f_printf( &fp, "barycentre_right: line=%d, col=%d\n", p->barycentre_right.line, p->barycentre_right.col);
+	f_printf( &fp, "neutral_line_right_toe: line=%d, col=%d\n", p->neutral_right.toe.line, p->neutral_right.toe.col);
+	f_printf( &fp, "neutral_line_right_heel: line=%d, col=%d\n", p->neutral_right.heel.line, p->neutral_right.heel.col);
+	sprintf( buff, "%5.2f", p->dev_right); f_printf( &fp, "dev_right = %s\n", buff);
+	sprintf( buff, "%5.2f", p->dev_total); f_printf( &fp, "dev_total = %s\n", buff);
+
 	if( p->pronation == NEUTRE_t)
 	{
 		f_printf( &fp, "pronation = NEUTRE\n");
@@ -259,33 +263,6 @@ FIL		fp;
 
 	f_sync( &fp);
 	f_printf( &fp, "\n\n");
-
-	/*for( uint8_t lines = 0; lines < TOTAL_LINES; lines ++)
-	{
-		f_printf( &fp, ";;;");
-
-		for( uint8_t cols = 0; cols < TOTAL_COL; cols ++)
-		{
-			index = INDEX_FROM_LINE_COL( lines, cols);
-
-			if( cols < TOTAL_COL / 2)
-			{
-				f_printf( &fp, "\"%d\"", p->data.left[index]);
-				if( index & !((index+1)%8))
-					f_printf( &fp, ";;");
-				else
-					f_printf( &fp, ";");
-			}
-			else
-			{
-				f_printf( &fp, "\"%d\"", p->data.right[index]);
-				if( index & !((index+1)%8))
-					f_printf( &fp, "\n");
-				else
-					f_printf( &fp, ";");
-			}
-		}
-	}*/
 
 	for( int lines = TOTAL_LINES-1; lines >= 0; lines --)
 	{
@@ -359,11 +336,37 @@ uint16_t	index;
 	sprintf( buff, "%5.2f", p->right_size); f_printf( &fp, "right_size = %s\n", buff);
 	f_printf( &fp, "right_hi = %d\n", p->right_hi);
 	f_printf( &fp, "right_lo = %d\n", p->right_lo);
+	sprintf( buff, "%5.2f", p->size); f_printf( &fp, "size = %s\n", buff);
 
 	f_sync( &fp);
 	f_printf( &fp, "\n\n");
 
-	for( uint8_t lines = 0; lines < TOTAL_LINES; lines ++)
+	for( int lines = TOTAL_LINES-1; lines >= 0; lines --)
+		{
+			f_printf( &fp, ";;;");
+
+			for( uint8_t cols = 0; cols < TOTAL_COL*2; cols ++)
+			{
+				if( cols < TOTAL_COL)
+				{
+					f_printf( &fp, "\"%d\"", p->matrix.left[lines][cols]);
+					if(cols == (TOTAL_COL-1) )
+						f_printf( &fp, ";;");
+					else
+						f_printf( &fp, ";");
+				}
+				else
+				{
+					f_printf( &fp, "\"%d\"", p->matrix.right[lines][cols-TOTAL_COL]);
+					if( cols ==  (TOTAL_COL*2)-1 )
+						f_printf( &fp, "\n");
+					else
+						f_printf( &fp, ";");
+				}
+			}
+		}
+
+	/*for( uint8_t lines = 0; lines < TOTAL_LINES; lines ++)
 	{
 		f_printf( &fp, ";;;");
 
@@ -388,7 +391,7 @@ uint16_t	index;
 					f_printf( &fp, ";");
 			}
 		}
-	}
+	}*/
 
 	f_sync( &fp);
 	f_close( &fp);
