@@ -860,7 +860,7 @@ RND_Size_Get( t_measure *p)
 		osDelay(100);
 
 	RND_Acq_Multiple_Start(5);
-	RND_Print("PENCHEZ-VOUS\nEN AVANT"); osDelay(4*SECOND);
+	RND_Print("LEVEZ\nLEGEREMENT\nLES TALONS"); osDelay(4*SECOND);
 	RND_Acq_Multiple_End( &p->d2.data, 5, 10);
 
 	/***************************************************/

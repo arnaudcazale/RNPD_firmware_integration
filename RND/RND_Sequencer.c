@@ -46,7 +46,7 @@
 static t_seq_state
 RND_SEQ_Step_T1( void)
 {
-	RND_Print("start"); osDelay(10);
+	RND_Print("start"); osDelay(5);
 	LOG("Sequencer state = T1\n");
 
 	RND_Led_SendCommand( T_ETEINT);
@@ -69,26 +69,26 @@ RND_SEQ_Step_T2( void)
 {
 uint8_t count = 20;
 
-	RND_Print("main"); osDelay(10);
+	RND_Print("main"); //osDelay(10);
 
 	LOG("Sequencer state = T2\n");
 
-	RND_Led_SendCommand( T_CHENILLARD_LENT);
+	//RND_Led_SendCommand( T_CHENILLARD_LENT);
 
-	RND_Print( "SCANNEZ LE\nQR CODE\n"); osDelay(10);
+	//RND_Print( "SCANNEZ LE\nQR CODE\n"); osDelay(10);
 
-	RND_SetDisplay_Backlight( TRUE);
+	//RND_SetDisplay_Backlight( TRUE);
 
-	osDelay(3*SECOND);
+	//osDelay(3*SECOND);
 
-	while( count)
+	/*while( count)
 	{
 		if( RND_Calc_IsUserOn() == TRUE)
 			return SEQ_T3;
 
 		osDelay(100);
 		count --;
-	}
+	}*/
 
 	return SEQ_T7;
 }
@@ -179,9 +179,9 @@ RND_SEQ_Step_T3( void)
 		if (gvt_data.pronation == NEUTRE_t)
 			RND_Print("FOULÉE\nNEUTRE");
 		else if (gvt_data.pronation == NEUTRE_TENDANCE_CONTROL_t)
-			RND_Print("FOULÉE\nNEUTRE/CONT");
+			RND_Print("FOULÉE\nTENDANCE\nCONTROL");
 		else if (gvt_data.pronation == NEUTRE_TENDANCE_SUPINAL_t)
-					RND_Print("FOULÉE\nNEUTRE/SUP");
+					RND_Print("FOULÉE\nTENDANCE\nSUPINAL");
 		else if (gvt_data.pronation == CONTROL_t)
 			RND_Print("FOULÉE\nCONTROL");
 		else if (gvt_data.pronation == SUPINAL_t)
