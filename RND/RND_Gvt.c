@@ -1653,9 +1653,9 @@ t_point right_B = {0,0};
 		p->pronation = SUPINAL_t;
 	    else if( dev > 3)
 	    	p->pronation = CONTROL_t;
-	    else if( (dev >=-3) && (dev <=-1.5) )
+	    else if( (dev >=-3) && (dev <=-2.25) )
 	    	p->pronation = NEUTRE_TENDANCE_SUPINAL_t;
-	    else if( (dev >=1.5) && (dev <=3) )
+	    else if( (dev >=1.25) && (dev <=3) )
 	    	p->pronation = NEUTRE_TENDANCE_CONTROL_t;
 	    else
 	    	p->pronation = NEUTRE_t;
